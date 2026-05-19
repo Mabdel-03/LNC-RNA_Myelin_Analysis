@@ -2,7 +2,7 @@
 #SBATCH -J lncrna_ols
 #SBATCH -p kellis
 #SBATCH -n 4
-#SBATCH --mem=32G
+#SBATCH --mem=160G
 #SBATCH -t 8:00:00
 #SBATCH -o logs/sbatch/lncrna_ols_%j.out
 #SBATCH -e logs/sbatch/lncrna_ols_%j.err
@@ -44,9 +44,11 @@ conda activate /home/mabdel03/data/conda_envs/Python_Analysis
 export PATH="${PATH}:/home/mabdel03/data/conda_envs/GWAS_env/bin"
 
 # Optional engine override (default = whatever config.yaml says).
+# IMPORTANT: keep the tempfile in the repo root, not /tmp — the pipeline
+# derives `_repo_root` from the config-file parent dir, so a /tmp tempfile
+# routes ALL output writes to /tmp/results/.
 if [ -n "${ENGINE_OVERRIDE:-}" ]; then
-    # Patch the engine line on the fly (don't edit config.yaml in place).
-    TMP_CFG="$(mktemp --suffix=.yaml)"
+    TMP_CFG="$(mktemp --tmpdir=. --suffix=.yaml runtime_config.XXXXXX)"
     awk -v eng="${ENGINE_OVERRIDE}" '
         /^  engine:/ { print "  engine: \"" eng "\""; next } { print }
     ' config.yaml > "${TMP_CFG}"

@@ -2,7 +2,7 @@
 #SBATCH -J lncrna_regenie
 #SBATCH -p kellis
 #SBATCH -n 16
-#SBATCH --mem=128G
+#SBATCH --mem=200G
 #SBATCH -t 48:00:00
 #SBATCH -o logs/sbatch/lncrna_regenie_%j.out
 #SBATCH -e logs/sbatch/lncrna_regenie_%j.err
@@ -40,28 +40,27 @@ export PATH="${PATH}:/home/mabdel03/data/conda_envs/GWAS_env/bin"
 # REGENIE thread count from SLURM allocation
 N_THREADS="${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-16}}"
 
-# Optional engine override
+# IMPORTANT: keep the tempfile in the repo root — the pipeline derives
+# `_repo_root` from the config-file parent dir, so a /tmp tempfile would
+# route ALL output writes to /tmp/results/.
+TMP_CFG="$(mktemp --tmpdir=. --suffix=.yaml runtime_config.XXXXXX)"
 if [ -n "${ENGINE_OVERRIDE:-}" ]; then
-    TMP_CFG="$(mktemp --suffix=.yaml)"
     awk -v eng="${ENGINE_OVERRIDE}" -v thr="${N_THREADS}" '
         /^  engine:/    { print "  engine: \"" eng "\""; next }
         /^  threads_step1:/ { print "  threads_step1: " thr; next }
         /^  threads_step2:/ { print "  threads_step2: " thr; next }
         { print }
     ' config.yaml > "${TMP_CFG}"
-    CFG_ARG="--config ${TMP_CFG}"
-    trap 'rm -f "${TMP_CFG}"' EXIT
 else
     # Patch threads to match SLURM allocation but keep engine from config
-    TMP_CFG="$(mktemp --suffix=.yaml)"
     awk -v thr="${N_THREADS}" '
         /^  threads_step1:/ { print "  threads_step1: " thr; next }
         /^  threads_step2:/ { print "  threads_step2: " thr; next }
         { print }
     ' config.yaml > "${TMP_CFG}"
-    CFG_ARG="--config ${TMP_CFG}"
-    trap 'rm -f "${TMP_CFG}"' EXIT
 fi
+CFG_ARG="--config ${TMP_CFG}"
+trap 'rm -f "${TMP_CFG}"' EXIT
 
 echo "[$(date -Iseconds)] starting REGENIE pipeline on $(hostname)"
 echo "  engine: ${ENGINE_OVERRIDE:-from config.yaml (default: regenie+ols)}"

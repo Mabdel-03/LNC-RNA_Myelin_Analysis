@@ -2,7 +2,7 @@
 #SBATCH -J lncrna_bolt
 #SBATCH -p kellis
 #SBATCH -n 32
-#SBATCH --mem=150G
+#SBATCH --mem=200G
 #SBATCH -t 48:00:00
 #SBATCH -o logs/sbatch/lncrna_bolt_%j.out
 #SBATCH -e logs/sbatch/lncrna_bolt_%j.err
@@ -39,8 +39,10 @@ export PATH="${PATH}:/home/mabdel03/data/conda_envs/bolt_lmm/bin:/home/mabdel03/
 
 N_THREADS="${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-32}}"
 
-# Force engine=bolt+ols + patch BOLT threads to SLURM allocation
-TMP_CFG="$(mktemp --suffix=.yaml)"
+# Force engine=bolt+ols + patch BOLT threads to SLURM allocation.
+# IMPORTANT: keep the tempfile in the repo root — the pipeline derives
+# `_repo_root` from the config-file parent dir.
+TMP_CFG="$(mktemp --tmpdir=. --suffix=.yaml runtime_config.XXXXXX)"
 awk -v thr="${N_THREADS}" '
     /^  engine:/      { print "  engine: \"bolt+ols\""; next }
     /^    threads:/   { print "    threads: " thr; next }
