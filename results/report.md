@@ -1,6 +1,6 @@
 # rs2546890 → UKBB MRI IDP association — report
 
-_generated: 2026-05-19T04:29:57_
+_generated: 2026-05-19T18:28:40_
 
 ## Variant
 - rsID: **rs2546890**
@@ -22,8 +22,9 @@ _generated: 2026-05-19T04:29:57_
 | covariate_input | 488,221 | 0 |
 | merged_inner_join | 487,150 | 0 |
 | ancestry=White British_via_sqc | 430,518 | 56,632 |
-| unrelated_king≥0.0884 | 399,161 | 31,357 |
-| required_covars_nonmissing | 399,161 | 0 |
+| required_covars_nonmissing | 430,518 | 0 |
+| ols_unrelated_king≥0.0884 | 399,161 | 31,357 |
+| lmm_keep_kinship<0.354 | 430,354 | 164 |
 
 ## Phenotypes tested
 - primary: 615

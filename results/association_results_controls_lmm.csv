@@ -1,0 +1,2 @@
+column_name,family,panel,modality,metric,region,source,n,beta_per_A,se,chisq,p,log10p,engine,info,eaf,status,effect_allele,other_allele,family_bonferroni,family_fdr_bh
+WMH_volume,controls,secondary,T2_FLAIR,WMH_volume,,basket,38995,0.000351271,0.00598908,0.00344004,0.9532293371851114,0.0208026,regenie,,0.48069,ok,A,G,0.9532293371851114,0.9532293371851114

@@ -1,0 +1,3 @@
+family,n_tests,alpha_bonf,n_sig_bonf,n_sig_fdr_05,n_sig_fdr_10,min_p,q_at_top_hit
+controls,1,0.05,0,0,0,0.9532293371851114,0.9532293371851114
+secondary,4,0.0125,0,0,0,0.6964597137333284,0.9030861877243729

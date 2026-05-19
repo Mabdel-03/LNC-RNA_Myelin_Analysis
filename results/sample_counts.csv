@@ -4,5 +4,6 @@ phenotype_input,502357,0
 covariate_input,488221,0
 merged_inner_join,487150,0
 ancestry=White British_via_sqc,430518,56632
-unrelated_king≥0.0884,399161,31357
-required_covars_nonmissing,399161,0
+required_covars_nonmissing,430518,0
+ols_unrelated_king≥0.0884,399161,31357
+lmm_keep_kinship<0.354,430354,164
