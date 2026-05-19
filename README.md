@@ -54,6 +54,8 @@ Set the paths inside `config.yaml`. Defaults are wired to the local Kellis-lab U
 
 ## How to run
 
+### Interactive (login node) — quick OLS sanity checks
+
 ```bash
 # 1) Inspect: validates paths/tools, writes logs/inspect_report.txt
 python src/00_inspect_inputs.py --config config.yaml
@@ -61,13 +63,35 @@ python src/00_inspect_inputs.py --config config.yaml
 # 2) Full dry run (no plink2/no model fits, just plan + manifests)
 bash scripts/run_all.sh --config config.yaml --dry-run
 
-# 3) Test mode — caps to first 3 phenotypes, runs the real models end-to-end
-#    (also requires project.dry_run: false OR drop --dry-run + flip config)
+# 3) Test mode — caps to first N phenotypes (composites + ROI PCs prioritized),
+#    runs the real models end-to-end
 bash scripts/run_all.sh --config config.yaml
 
 # 4) Full run: edit config.yaml → project.dry_run: false, project.test_mode: false
 bash scripts/run_all.sh --config config.yaml
 ```
+
+### SLURM on Luria — kellis partition
+
+For production runs, submit the wrapper sbatch scripts (they activate the
+right conda env, set tool paths, and patch SLURM thread counts into config):
+
+```bash
+# OLS only (~30 min wall-clock, 4 cpus / 32G)
+sbatch scripts/sbatch/pipeline_ols.sbatch.sh
+
+# Mixed-model headline (REGENIE step1+step2 + OLS sensitivity)
+# 16 cpus / 128G / up to 48h — scales linearly with lmm.max_phenotypes
+sbatch scripts/sbatch/pipeline_regenie.sbatch.sh
+
+# Optional BOLT-LMM secondary engine
+# 32 cpus / 150G / up to 48h
+sbatch scripts/sbatch/pipeline_bolt.sbatch.sh
+```
+
+See [`scripts/sbatch/README.md`](scripts/sbatch/README.md) for wall-clock
+budgeting (REGENIE step 1 is ~15-25 min/phenotype) and how to override the
+engine at submit time.
 
 Each script accepts `--config` and `--dry-run`. `--dry-run` overrides the value in config for that step.
 
