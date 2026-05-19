@@ -319,10 +319,15 @@ def make_design_matrix(df: pd.DataFrame,
 def fit_ols_model(y: pd.Series,
                   exposure: pd.Series,
                   covariates: pd.DataFrame,
-                  exposure_name: str = "exposure") -> dict:
+                  exposure_name: str = "exposure",
+                  vcov_type: str = "nonrobust",
+                  return_model: bool = False) -> dict:
     """OLS of y on [exposure, covariates+const]. Returns a flat result dict.
 
     NaN rows in any of y/exposure/covariates are dropped jointly.
+    `vcov_type` ∈ {"nonrobust","HC0","HC1","HC2","HC3"} passes through to
+    statsmodels `OLS().fit(cov_type=...)` — only the SE estimator changes;
+    point estimates are identical.
     """
     import statsmodels.api as sm
 
@@ -333,25 +338,22 @@ def fit_ols_model(y: pd.Series,
         return {"status": "too_few_obs", "n": n}
     X = frame.drop(columns="__y__")
     Y = frame["__y__"]
-    # rank check
     try:
         rank = np.linalg.matrix_rank(X.values)
     except Exception:
         rank = X.shape[1]
-    if rank < X.shape[1]:
-        # drop perfectly collinear cols
-        _, idx = np.linalg.qr(X.values, mode="reduced")
-        # simpler: rely on statsmodels' pinv; just warn
-        pass
     try:
-        model = sm.OLS(Y.values, X.values, hasconst=True).fit()
+        if vcov_type == "nonrobust":
+            model = sm.OLS(Y.values, X.values, hasconst=True).fit()
+        else:
+            model = sm.OLS(Y.values, X.values, hasconst=True).fit(cov_type=vcov_type)
     except Exception as exc:  # noqa: BLE001
         return {"status": f"fit_error:{exc.__class__.__name__}", "n": n}
     cols = list(X.columns)
     if exposure_name not in cols:
         return {"status": "exposure_missing_post_design", "n": n}
     i = cols.index(exposure_name)
-    return {
+    out = {
         "status": "ok",
         "n": int(n),
         "beta": float(model.params[i]),
@@ -361,7 +363,13 @@ def fit_ols_model(y: pd.Series,
         "r2": float(model.rsquared),
         "rank": int(rank),
         "ncols": int(X.shape[1]),
+        "vcov_type": vcov_type,
     }
+    if return_model:
+        out["_model"] = model
+        out["_design"] = X
+        out["_y"] = Y
+    return out
 
 
 def fit_genotypic_model(y: pd.Series,
@@ -469,8 +477,399 @@ def run_cmd(cmd: Sequence[str] | str, logger: Optional[logging.Logger] = None,
     return proc
 
 
+# ---------------------------------------------------------------------------
+# Hierarchical refactor: composite + ROI PCA + family FDR + diagnostics + LMM
+# ---------------------------------------------------------------------------
+
+def zscore_series(x: pd.Series) -> pd.Series:
+    """Z-score a numeric series, NA-safe. Returns NaN if sd is zero or undefined."""
+    x = pd.Series(x).astype(float)
+    mu = x.mean(skipna=True)
+    sd = x.std(skipna=True, ddof=1)
+    if not np.isfinite(sd) or sd == 0:
+        return pd.Series(np.nan, index=x.index)
+    return (x - mu) / sd
+
+
+def compute_composite_score(component_df: pd.DataFrame,
+                            weights: dict,
+                            min_components: int = 2,
+                            standardize: str = "zscore",
+                            rescale_by_sqrt_n: bool = True) -> pd.Series:
+    """Build a weighted composite from component metric columns.
+
+    Parameters
+    ----------
+    component_df : DataFrame
+        Per-eid table with one column per available metric (e.g. FA, MD, RD).
+        Columns NOT in `weights` are ignored. Components in `weights` but
+        missing from `component_df` are simply skipped (composite still
+        computed if remaining count ≥ min_components).
+    weights : dict
+        {metric_name: signed_weight}.
+    min_components : int
+        Required non-missing component count per eid — else NaN.
+    standardize : str
+        "zscore" or "inrt" — applied per metric column before weighting.
+    rescale_by_sqrt_n : bool
+        Divide the weighted sum by sqrt(n_present) so that subjects with
+        more components don't get a larger-magnitude composite.
+
+    Returns
+    -------
+    Series indexed like component_df, with the composite score.
+    """
+    available = [m for m in weights if m in component_df.columns]
+    if not available:
+        return pd.Series(np.nan, index=component_df.index)
+    standardized = pd.DataFrame(index=component_df.index)
+    for m in available:
+        s = component_df[m]
+        if standardize == "inrt":
+            standardized[m] = inverse_rank_normalize(s)
+        else:
+            standardized[m] = zscore_series(s)
+    weighted = standardized.mul(pd.Series({m: float(weights[m]) for m in available}))
+    n_present = standardized.notna().sum(axis=1)
+    summed = weighted.sum(axis=1, skipna=True)
+    summed[n_present < min_components] = np.nan
+    if rescale_by_sqrt_n:
+        denom = np.sqrt(n_present.clip(lower=1))
+        summed = summed / denom
+        summed[n_present < min_components] = np.nan
+    return summed
+
+
+def compute_roi_pca(metric_df: pd.DataFrame,
+                    max_col_missing_rate: float = 0.5,
+                    max_row_missing_rate: float = 0.3,
+                    n_components: int = 2,
+                    pc2_min_evr: float = 0.10,
+                    random_state: int = 12345) -> dict:
+    """Run PCA across metrics for one ROI.
+
+    Parameters
+    ----------
+    metric_df : DataFrame
+        Per-eid table with one column per metric for a single tract
+        (e.g. FA, MD, L1, L2, L3, ICVF, OD, ISOVF, MO).
+
+    Returns
+    -------
+    dict with keys:
+        scores : DataFrame (eid index, columns ['PC1'] or ['PC1','PC2'])
+        loadings : DataFrame (rows=metrics, cols=['PC1','PC2'])
+        evr : ndarray of explained variance ratios for kept components
+        n_used : int — number of eids included after row-filter
+        cols_used : list[str] — metric columns surviving the col-filter
+    """
+    from sklearn.decomposition import PCA
+
+    df = metric_df.copy()
+    if df.shape[1] == 0:
+        return {"scores": pd.DataFrame(index=df.index),
+                "loadings": pd.DataFrame(),
+                "evr": np.array([]), "n_used": 0, "cols_used": []}
+    # Drop rows that are entirely NaN (e.g. non-imaging subjects in the LMM
+    # superset). Otherwise the column-missing filter spuriously kills every
+    # column because most subjects don't have imaging data.
+    df = df.dropna(how="all")
+    if len(df) == 0:
+        return {"scores": pd.DataFrame(index=metric_df.index),
+                "loadings": pd.DataFrame(),
+                "evr": np.array([]), "n_used": 0, "cols_used": []}
+    col_keep = [c for c in df.columns
+                if df[c].isna().mean() <= max_col_missing_rate]
+    df = df[col_keep]
+    if df.shape[1] < 2:
+        return {"scores": pd.DataFrame(index=df.index),
+                "loadings": pd.DataFrame(),
+                "evr": np.array([]), "n_used": 0, "cols_used": col_keep}
+    z = df.apply(zscore_series, axis=0)
+    row_missing = z.isna().mean(axis=1)
+    keep_eids = row_missing[row_missing <= max_row_missing_rate].index
+    z = z.loc[keep_eids]
+    if len(z) < 30:
+        return {"scores": pd.DataFrame(index=metric_df.index),
+                "loadings": pd.DataFrame(),
+                "evr": np.array([]), "n_used": int(len(z)), "cols_used": col_keep}
+    col_means = z.mean(axis=0, skipna=True)
+    z = z.fillna(col_means)
+    k_max = min(n_components, z.shape[1])
+    pca = PCA(n_components=k_max, random_state=random_state)
+    scores_arr = pca.fit_transform(z.values)
+    evr = pca.explained_variance_ratio_
+    loadings_arr = pca.components_  # shape (k, n_features)
+    k_keep = 1
+    if k_max >= 2 and evr[1] >= pc2_min_evr:
+        k_keep = 2
+    pc_names = [f"PC{i + 1}" for i in range(k_keep)]
+    scores = pd.DataFrame(scores_arr[:, :k_keep], index=z.index, columns=pc_names)
+    # broadcast back over the full eid index, leaving non-included rows NaN
+    scores = scores.reindex(metric_df.index)
+    loadings = pd.DataFrame(loadings_arr[:k_keep, :].T,
+                            index=col_keep, columns=pc_names)
+    return {"scores": scores, "loadings": loadings, "evr": evr[:k_keep],
+            "n_used": int(len(keep_eids)), "cols_used": col_keep}
+
+
+def bh_fdr_by_family(df: pd.DataFrame,
+                     family_col: str = "family",
+                     p_col: str = "p") -> pd.Series:
+    """Apply Benjamini-Hochberg FDR within each family independently.
+
+    Returns a Series aligned to df.index with per-row q-values.
+    """
+    q = pd.Series(np.nan, index=df.index, dtype=float)
+    for fam, sub in df.groupby(family_col, dropna=False):
+        q.loc[sub.index] = bh_fdr(sub[p_col].values)
+    return q
+
+
+def bonferroni_by_family(df: pd.DataFrame,
+                         family_col: str = "family",
+                         p_col: str = "p") -> pd.Series:
+    """Per-family Bonferroni-adjusted p-values (capped at 1)."""
+    out = pd.Series(np.nan, index=df.index, dtype=float)
+    for fam, sub in df.groupby(family_col, dropna=False):
+        n = int(sub[p_col].notna().sum())
+        if n == 0:
+            continue
+        out.loc[sub.index] = (sub[p_col] * n).clip(upper=1.0)
+    return out
+
+
+def compute_ols_diagnostics(fit_result: dict) -> dict:
+    """Per-phenotype diagnostics from a fit returned with return_model=True.
+
+    Computes r2, cond_number, Breusch-Pagan p, Jarque-Bera p, max studentized
+    residual count > 4. Cheap to call alongside fit_ols_model().
+    """
+    model = fit_result.get("_model")
+    if model is None:
+        return {"diagnostic_status": "no_model_returned"}
+    import statsmodels.stats.diagnostic as smdiag
+    X = fit_result["_design"].values
+    try:
+        cond = float(np.linalg.cond(X))
+    except Exception:
+        cond = np.nan
+    try:
+        bp = smdiag.het_breuschpagan(model.resid, X)
+        bp_p = float(bp[1])
+    except Exception:
+        bp_p = np.nan
+    try:
+        jb = stats.jarque_bera(model.resid)
+        jb_p = float(jb.pvalue if hasattr(jb, "pvalue") else jb[1])
+    except Exception:
+        jb_p = np.nan
+    try:
+        influence = model.get_influence()
+        stud_resid = influence.resid_studentized_internal
+        n_outlier_4 = int(np.sum(np.abs(stud_resid) > 4))
+    except Exception:
+        n_outlier_4 = -1
+    return {
+        "r2": float(fit_result.get("r2", np.nan)),
+        "r2_adj": float(getattr(model, "rsquared_adj", np.nan)),
+        "cond_number": cond,
+        "bp_p": bp_p,
+        "jb_p": jb_p,
+        "n_studres_gt4": n_outlier_4,
+        "diagnostic_status": "ok",
+    }
+
+
+# ---------------------------------------------------------------------------
+# LMM helpers — REGENIE + BOLT-LMM
+# ---------------------------------------------------------------------------
+
+def _build_env_with_ld_path(extra_lib_path: str = "") -> dict:
+    env = os.environ.copy()
+    if extra_lib_path:
+        prev = env.get("LD_LIBRARY_PATH", "")
+        env["LD_LIBRARY_PATH"] = f"{extra_lib_path}:{prev}" if prev else extra_lib_path
+    return env
+
+
+def run_regenie_step1(*,
+                      binary: str,
+                      bed_prefix: str,
+                      pheno_file: str,
+                      pheno_col_list: Sequence[str],
+                      covar_file: str,
+                      covar_col_list: Sequence[str],
+                      cat_covar_list: Sequence[str],
+                      keep_file: str,
+                      extract_file: str,
+                      out_prefix: str,
+                      bsize: int = 1000,
+                      threads: int = 16,
+                      tmp_prefix: Optional[str] = None,
+                      force_qt: bool = True,
+                      extra_ld_library_path: str = "",
+                      logger: Optional[logging.Logger] = None) -> subprocess.CompletedProcess:
+    """Invoke REGENIE step 1 (LOCO null model). Multi-phenotype in one call."""
+    cmd = [
+        binary,
+        "--step", "1",
+        "--bed", bed_prefix,
+        "--extract", extract_file,
+        "--phenoFile", pheno_file,
+        "--phenoColList", ",".join(pheno_col_list),
+        "--covarFile", covar_file,
+        "--covarColList", ",".join(covar_col_list),
+        "--keep", keep_file,
+        "--bsize", str(bsize),
+        "--lowmem",
+        "--threads", str(threads),
+        "--out", out_prefix,
+        "--gz",
+    ]
+    if cat_covar_list:
+        cmd += ["--catCovarList", ",".join(cat_covar_list)]
+    if force_qt:
+        cmd.append("--force-qt")
+    if tmp_prefix:
+        cmd += ["--lowmem-prefix", tmp_prefix]
+    env = _build_env_with_ld_path(extra_ld_library_path)
+    return run_cmd(cmd, logger=logger, env=env, check=True)
+
+
+def run_regenie_step2(*,
+                      binary: str,
+                      pgen_prefix: str,
+                      pheno_file: str,
+                      pheno_col_list: Sequence[str],
+                      covar_file: str,
+                      covar_col_list: Sequence[str],
+                      cat_covar_list: Sequence[str],
+                      keep_file: str,
+                      pred_file: str,
+                      out_prefix: str,
+                      extract_file: Optional[str] = None,
+                      bsize: int = 400,
+                      min_mac: int = 20,
+                      min_info: float = 0.8,
+                      threads: int = 8,
+                      extra_ld_library_path: str = "",
+                      logger: Optional[logging.Logger] = None) -> subprocess.CompletedProcess:
+    """Invoke REGENIE step 2 (per-variant association on imputed dosages)."""
+    cmd = [
+        binary,
+        "--step", "2",
+        "--pgen", pgen_prefix,
+        "--phenoFile", pheno_file,
+        "--phenoColList", ",".join(pheno_col_list),
+        "--covarFile", covar_file,
+        "--covarColList", ",".join(covar_col_list),
+        "--keep", keep_file,
+        "--pred", pred_file,
+        "--bsize", str(bsize),
+        "--minMAC", str(min_mac),
+        "--minINFO", str(min_info),
+        "--threads", str(threads),
+        "--gz",
+        "--out", out_prefix,
+    ]
+    if cat_covar_list:
+        cmd += ["--catCovarList", ",".join(cat_covar_list)]
+    if extract_file:
+        cmd += ["--extract", extract_file]
+    env = _build_env_with_ld_path(extra_ld_library_path)
+    return run_cmd(cmd, logger=logger, env=env, check=True)
+
+
+def parse_regenie_output(path: str | os.PathLike,
+                         target_variant_id: Optional[str] = None) -> pd.DataFrame:
+    """Parse a single REGENIE step-2 .regenie.gz (or .regenie) file.
+
+    REGENIE output columns: CHROM GENPOS ID ALLELE0 ALLELE1 A1FREQ INFO N
+                            TEST BETA SE CHISQ LOG10P EXTRA
+
+    Returns a canonical DataFrame:
+        variant_id, chrom, pos, allele_ref, allele_alt, eaf, info, n,
+        beta, se, chisq, log10p, p
+    Filtered to the target variant if `target_variant_id` is given.
+    """
+    p = Path(path)
+    if not p.is_file():
+        raise FileNotFoundError(p)
+    # whitespace-separated regardless of .gz
+    df = pd.read_csv(p, sep=r"\s+", engine="python", compression="infer",
+                     comment="#")
+    rename = {
+        "CHROM": "chrom", "GENPOS": "pos", "ID": "variant_id",
+        "ALLELE0": "allele_ref", "ALLELE1": "allele_alt",
+        "A1FREQ": "eaf", "INFO": "info", "N": "n",
+        "BETA": "beta", "SE": "se", "CHISQ": "chisq", "LOG10P": "log10p",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+    keep = [c for c in ("variant_id", "chrom", "pos", "allele_ref", "allele_alt",
+                        "eaf", "info", "n", "beta", "se", "chisq", "log10p")
+            if c in df.columns]
+    df = df[keep].copy()
+    if "log10p" in df.columns:
+        df["p"] = 10.0 ** (-df["log10p"].astype(float))
+    if target_variant_id is not None and "variant_id" in df.columns:
+        df = df.loc[df["variant_id"].astype(str) == str(target_variant_id)].copy()
+    return df
+
+
+def parse_bolt_stats(path: str | os.PathLike,
+                     target_variant_id: Optional[str] = None,
+                     target_rsid: Optional[str] = None,
+                     target_chrpos: Optional[Tuple[int, int]] = None) -> pd.DataFrame:
+    """Parse a BOLT-LMM .stats file (tab/whitespace-separated).
+
+    BOLT columns (varies by version, --verboseStats adds columns):
+        SNP CHR BP GENPOS ALLELE1 ALLELE0 A1FREQ INFO BETA SE CHISQ_BOLT_LMM P_BOLT_LMM
+
+    Returns a canonical DataFrame (see parse_regenie_output).
+    """
+    p = Path(path)
+    if not p.is_file():
+        raise FileNotFoundError(p)
+    df = pd.read_csv(p, sep=r"\s+", engine="python", comment="#")
+    rename = {
+        "SNP": "variant_id", "CHR": "chrom", "BP": "pos",
+        "ALLELE1": "allele_alt", "ALLELE0": "allele_ref",
+        "A1FREQ": "eaf", "INFO": "info",
+        "BETA": "beta", "SE": "se",
+        "CHISQ_BOLT_LMM": "chisq",
+        "P_BOLT_LMM": "p",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+    if "p" in df.columns:
+        df["log10p"] = -np.log10(df["p"].clip(lower=np.finfo(float).tiny))
+    keep = [c for c in ("variant_id", "chrom", "pos", "allele_ref", "allele_alt",
+                        "eaf", "info", "beta", "se", "chisq", "p", "log10p")
+            if c in df.columns]
+    df = df[keep].copy()
+    if target_variant_id is not None and "variant_id" in df.columns:
+        mask = df["variant_id"].astype(str) == str(target_variant_id)
+        if mask.any():
+            return df.loc[mask].copy()
+    if target_rsid is not None and "variant_id" in df.columns:
+        mask = df["variant_id"].astype(str) == str(target_rsid)
+        if mask.any():
+            return df.loc[mask].copy()
+    if target_chrpos is not None and {"chrom", "pos"}.issubset(df.columns):
+        c, b = target_chrpos
+        mask = (df["chrom"].astype(str) == str(c)) & (df["pos"].astype(int) == int(b))
+        if mask.any():
+            return df.loc[mask].copy()
+    return df
+
+
 __all__ = [
     "bh_fdr",
+    "bh_fdr_by_family",
+    "bonferroni_by_family",
+    "compute_composite_score",
+    "compute_ols_diagnostics",
+    "compute_roi_pca",
     "dosage_to_hardcall",
     "find_columns_by_metadata_terms",
     "fit_genotypic_model",
@@ -478,10 +877,14 @@ __all__ = [
     "inverse_rank_normalize",
     "load_config",
     "make_design_matrix",
+    "parse_bolt_stats",
+    "parse_regenie_output",
     "parse_ukb_field_id",
     "read_header_only",
     "resolve_under_repo",
     "run_cmd",
+    "run_regenie_step1",
+    "run_regenie_step2",
     "safe_read_table",
     "set_seed",
     "setup_logger",
@@ -490,4 +893,5 @@ __all__ = [
     "tool_available",
     "trim_outliers_z",
     "write_version_log",
+    "zscore_series",
 ]

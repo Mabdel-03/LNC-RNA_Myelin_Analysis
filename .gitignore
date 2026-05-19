@@ -6,6 +6,17 @@ __pycache__/
 # do NOT commit per UKB data sharing terms.
 results/intermediate/
 results/variant/
+results/lmm_inputs/
+results/lmm/regenie_step1*
+results/lmm/regenie_step1_tmp*
+results/lmm/*.loco
+results/lmm/*.loco.gz
+results/lmm/bolt_*.stats
+# Per-eid derived score tables (composites + ROI PCs). The per-tract
+# summary loadings (roi_pca_loadings.csv) and per-phenotype association
+# stats are fine to commit.
+results/composite_phenotypes.csv
+results/roi_pca_phenotypes.csv
 
 # Per-run timestamped output dirs (only relevant if overwrite=false)
 results/2*/
@@ -17,3 +28,4 @@ logs/*.log
 
 # OS junk
 .DS_Store
+.pytest_cache/

@@ -42,6 +42,6 @@ config:    config.yaml
   variant extraction → plink2 on pgen (PRIMARY)
   phenotype source available: YES
   covariate source available:  YES
-  dry_run flag in config:       False
+  dry_run effective:            False
 
 ========================================================================

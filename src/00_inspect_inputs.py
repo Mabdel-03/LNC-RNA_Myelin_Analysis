@@ -164,8 +164,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     lines.append("  covariate source available:  " + ("YES" if covar_source_ok else "NO"))
 
-    dry = bool(cfg.get("project", {}).get("dry_run", True))
-    lines.append(f"  dry_run flag in config:       {dry}")
+    dry = args.dry_run or bool(cfg.get("project", {}).get("dry_run", True))
+    lines.append(f"  dry_run effective:            {dry}")
     lines.append("")
     lines.append("=" * 72)
 

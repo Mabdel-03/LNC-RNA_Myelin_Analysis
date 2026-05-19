@@ -14,7 +14,7 @@ project:
   random_seed: 12345
   dry_run: false                         # 00 runs full; 01-05 only validate. CLI flag --dry-run also forces this.
   test_mode: false                       # cap to max_test_phenotypes during dev
-  max_test_phenotypes: 3
+  max_test_phenotypes: 50
   overwrite: false                       # if false, writes go to a timestamped subdir of output_dir
   conda_env: "Python_Analysis"           # sourced by scripts/run_all.sh
 
@@ -142,7 +142,7 @@ covariates:
 
 models:
   primary_model: "ols_additive"
-  use_lmm: false                         # true → halt with REGENIE command template; no silent fallback
+  use_lmm: false                         # legacy flag; superseded by models.engine below. Kept for back-compat.
   phenotype_transform: "inverse_rank_normal"
   outlier_z_threshold: 6
   multiple_testing:
@@ -151,3 +151,118 @@ models:
   run_genotypic_sensitivity: true
   run_recessive_sensitivity: false
   run_dominant_sensitivity: false
+  # ----- hierarchical refactor: engine routing -----
+  engine: "regenie+ols"                  # ols | regenie | bolt | regenie+ols | bolt+ols | all
+  ols_robust_vcov: "nonrobust"           # nonrobust | HC0 | HC1 | HC2 | HC3
+  compute_diagnostics: true              # write model_diagnostics_summary.csv
+
+# =========================================================================
+# Hierarchical refactor (D1–D11 of /home/mabdel03/.claude/plans/lucky-napping-moore.md)
+# =========================================================================
+
+families:
+  # Each phenotype is tagged with `family` in addition to `panel`. Per-family
+  # Bonferroni + BH-FDR is computed independently across families.
+  #   primary     — pre-registered myelin-sensitive MRI (MTR, MTsat, MWF, qT1) — empty in current extract
+  #   secondary   — biological composites + ROI PCA scores
+  #   exploratory — all single-IDP dMRI metrics (the existing flat PheWAS)
+  #   controls    — WMH and any QC outcomes
+  primary_terms:
+    - "magnetisation transfer"
+    - "magnetization transfer"
+    - "MTR"
+    - "MTsat"
+    - "MWF"
+    - "myelin water fraction"
+    - "qT1"
+    - "quantitative T1"
+    - "T2*"
+    - "R2*"
+  controls_terms:
+    - "white matter hyperintensity"
+    - "WMH"
+    - "T2 FLAIR"
+
+composites:
+  standardize: "zscore"                  # zscore | inrt
+  min_components: 2                      # require at least N non-missing components per composite
+  rescale_by_sqrt_n: true                # divide by sqrt(n_present) so partial composites are comparable
+  # Composite definitions — each is a signed weighted sum of standardized
+  # component metrics within a single tract. See plan D3 for the biology.
+  definitions:
+    demyelination_like:
+      RD: +1
+      MD: +1
+      FA: -1
+      ICVF: -1
+      ISOVF: +1
+    free_water_like:
+      MD: +1
+      ISOVF: +1
+      L1: +1
+      L2: +1
+      L3: +1
+    axonal_loss_like:
+      L1: -1
+      FA: -1
+      ICVF: -1
+    tract_geometry_like:
+      OD: -1
+      FA: +1
+      MO: +1                             # optional — composite still computed if MO missing (min_components rule)
+
+roi_pca:
+  enabled: true
+  max_col_missing_rate: 0.5              # drop metric col within tract if >50% missing in QC sample
+  max_row_missing_rate: 0.3              # drop eid if >30% of remaining cols missing
+  pc2_min_evr: 0.10                      # keep PC2 only if it explains ≥10% variance
+  # Tracts to run ROI-PCA on. Each is matched as a substring against the
+  # tract slug parsed in step 02 (case-insensitive). Use any-of matching so
+  # e.g. "corpus callosum" picks up genu, body, splenium.
+  tracts:
+    - "superior cerebellar peduncle"
+    - "corpus callosum"
+    - "genu"
+    - "splenium"
+    - "internal capsule"
+    - "corticospinal"
+    - "posterior thalamic"
+    - "inferior longitudinal fasciculus"
+    - "sagittal stratum"
+
+lmm:
+  # Mixed-model engine settings. Activated when models.engine includes
+  # regenie or bolt.
+  threads_step1: 16
+  threads_step2: 8
+  bsize_step1: 1000
+  bsize_step2: 400
+  min_n_per_phenotype: 500               # drop phenotype from LMM run if non-NaN n < this
+  drop_kinship_above: 0.354              # MZ-twin / duplicate threshold; LMM keeps everyone else
+  scope_families:                        # which families go to LMM (REGENIE/BOLT)
+    - "primary"                          # myelin-sensitive MRI (empty in current extract)
+    - "secondary"                        # composites + ROI PCs (~316 phenotypes)
+    - "controls"                         # WMH
+    # exploratory (~694 single IDPs) is OLS-only by default — flip below to include
+  scope_include_exploratory: false       # set true to also LMM all single IDPs (long compute!)
+  max_phenotypes: 5                      # 0 = no cap. Cap LMM to 5 phenotypes for the demo run.
+                                         # Increase or set 0 for production once REGENIE
+                                         # wall-clock budget is sorted (~30 min/pheno on this HM3 BED).
+  target_variant_id: "5:158759900:A:G"   # step-2 --extract content (rs2546890 on GRCh37 pgen)
+  regenie:
+    binary: "/home/mabdel03/data/conda_envs/regenie_env/bin/regenie"  # v3.4.1, no libmvec needed
+    hm3_bed_prefix: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/geno/ukb_genoHM3/ukb_genoHM3_bed"
+    model_snps:    "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/geno/ukb_genoHM3/ukb_genoHM3_modelSNPs.txt"
+    step2_pgen_prefix: "/net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp"
+    reuse_step1: true                    # if pheno set hash matches, skip step 1
+    skip_step1: false                    # force-skip even without hash match (debugging)
+    min_mac: 20
+    min_info: 0.8
+    extra_ld_library_path: ""            # e.g. /path/to/glibc/lib if libmvec.so.1 missing
+  bolt:
+    binary: "/home/mabdel03/data/software/BOLT-LMM_v2.5/bolt"
+    ld_scores:   "/home/mabdel03/data/software/BOLT-LMM_v2.5/tables/LDSCORE.1000G_EUR.GRCh38.tab.gz"
+    genetic_map: "/home/mabdel03/data/software/BOLT-LMM_v2.5/tables/genetic_map_hg19_withX.txt.gz"
+    threads: 16
+    include_single_idps: false           # BOLT default scope = composites + ROI PCs only
+    regen_bgen: false                    # if true, materialize chr5 BGEN from pgen via plink2 (~1 hr)

@@ -4,15 +4,18 @@ write the analysis-ready table and the funnel counts.
 
 Funnel order (each step logged):
   1. inner-join eid across genotype + phenotype + covariates
-  2. ancestry restriction (if ancestry_relatedness_file provided and enabled)
-  3. relatedness pruning (if file provides kin_keep)
-  4. drop rows missing required covariates
-  5. genotype QC: per-sample dosage missing > variant.max_missing_rate → drop
-                  variant-wide INFO < variant.min_info → halt unless --force
+  2. ancestry restriction (if enabled) — gives the LMM-eligible pool
+  3. drop rows missing required covariates / dosage — gives the LMM superset
+     (this is what `analysis_ready.tsv` contains)
+  4. KING relatedness pruning at sample.kinship_threshold — gives the OLS subset
+  5. optional MZ-twin filter at lmm.drop_kinship_above — applied to LMM keep list
+  6. genotype QC: variant-wide INFO check (halt unless --force)
 
 Outputs:
-  results/intermediate/analysis_ready.tsv
-  results/sample_counts.csv
+  results/intermediate/analysis_ready.tsv  (LMM superset; OLS filters to keep_ols)
+  results/intermediate/keep_ols.txt        (FID IID — KING-unrelated subset)
+  results/intermediate/keep_lmm.txt        (FID IID — LMM keep, may exclude MZ twins)
+  results/sample_counts.csv                (per-step funnel counts)
 """
 from __future__ import annotations
 
@@ -153,6 +156,8 @@ def main(argv: list[str] | None = None) -> int:
     qc_path = results_dir / "genotype_qc_summary.csv"
     out_path = inter_dir / "analysis_ready.tsv"
     counts_path = results_dir / "sample_counts.csv"
+    keep_ols_path = inter_dir / "keep_ols.txt"
+    keep_lmm_path = inter_dir / "keep_lmm.txt"
 
     if dry:
         log.info("DRY RUN — checking required intermediate files exist")
@@ -222,41 +227,7 @@ def main(argv: list[str] | None = None) -> int:
         funnel.append(_funnel_row("ancestry_restriction_skipped", len(merged)))
         log.info("ancestry restriction disabled in config")
 
-    # ---- step 3: relatedness pruning
-    rel_path = inputs.get("relatedness_file") or ""
-    kin_thresh = float(cfg["sample"].get("kinship_threshold", 0.0884))
-    if cfg["sample"].get("restrict_to_unrelated", False):
-        if rel_path and Path(rel_path).is_file():
-            keep = _king_unrelated_keep(merged["eid"], rel_path, kin_thresh, log)
-            before = len(merged)
-            merged = merged[merged["eid"].isin(keep)].copy()
-            funnel.append(_funnel_row(f"unrelated_king≥{kin_thresh}", len(merged), before))
-            log.info(f"after KING graph pruning: {len(merged):,}")
-        elif "used_in_pca_calculation" in merged.columns:
-            keep = merged["used_in_pca_calculation"].astype(str).str.upper().isin(("TRUE", "1", "T"))
-            before = len(merged)
-            merged = merged[keep.values].copy()
-            funnel.append(_funnel_row("unrelated_sqc_pca_set", len(merged), before))
-            log.info(f"after SQC used_in_pca_calculation filter: {len(merged):,}")
-        elif anc_path and Path(anc_path).is_file():
-            anc2 = safe_read_table(anc_path)
-            anc2 = standardize_eid_column(anc2)
-            if "kin_keep" in anc2.columns:
-                keep_ids = anc2.loc[pd.to_numeric(anc2["kin_keep"], errors="coerce") == 1, "eid"]
-                before = len(merged)
-                merged = merged[merged["eid"].isin(keep_ids)].copy()
-                funnel.append(_funnel_row("unrelated_via_file", len(merged), before))
-                log.info(f"after relatedness pruning: {len(merged):,}")
-            else:
-                log.warning(f"{anc_path} missing 'kin_keep' column; skipping relatedness filter")
-                funnel.append(_funnel_row("unrelated_skipped", len(merged)))
-        else:
-            log.warning("no relatedness_file, no SQC PCA flag, no ancestry_relatedness_file with kin_keep — skipping relatedness filter")
-            funnel.append(_funnel_row("unrelated_skipped", len(merged)))
-    else:
-        funnel.append(_funnel_row("unrelated_skipped", len(merged)))
-
-    # ---- step 4: drop rows missing required covariates
+    # ---- step 3: drop rows missing required covariates / dosage → LMM superset
     missing_required = [c for c in REQUIRED_COVARS if c not in merged.columns]
     if missing_required:
         log.error(f"required covariates missing from table: {missing_required}")
@@ -264,9 +235,60 @@ def main(argv: list[str] | None = None) -> int:
     before = len(merged)
     merged = merged.dropna(subset=REQUIRED_COVARS + ["dosage_A"])
     funnel.append(_funnel_row("required_covars_nonmissing", len(merged), before))
-    log.info(f"after dropping missing required covars/dosage: {len(merged):,}")
+    log.info(f"after dropping missing required covars/dosage: {len(merged):,} (LMM superset)")
 
-    # ---- step 5: variant-wide QC
+    # Snapshot: this is the LMM-eligible sample (ancestry-filtered, has dosage + required covars).
+    lmm_eids = set(int(x) for x in merged["eid"].dropna().astype(int))
+
+    # ---- step 4: KING relatedness pruning → OLS subset
+    rel_path = inputs.get("relatedness_file") or ""
+    kin_thresh = float(cfg["sample"].get("kinship_threshold", 0.0884))
+    ols_eids = set(lmm_eids)  # default = no pruning
+    if cfg["sample"].get("restrict_to_unrelated", False):
+        if rel_path and Path(rel_path).is_file():
+            keep = _king_unrelated_keep(merged["eid"], rel_path, kin_thresh, log)
+            ols_eids = set(int(x) for x in keep)
+            funnel.append(_funnel_row(f"ols_unrelated_king≥{kin_thresh}", len(ols_eids),
+                                       len(lmm_eids)))
+            log.info(f"OLS sample after KING prune: {len(ols_eids):,}")
+        elif "used_in_pca_calculation" in merged.columns:
+            sub = merged[merged["used_in_pca_calculation"].astype(str).str.upper().isin(("TRUE", "1", "T"))]
+            ols_eids = set(int(x) for x in sub["eid"])
+            funnel.append(_funnel_row("ols_unrelated_sqc_pca_set", len(ols_eids), len(lmm_eids)))
+            log.info(f"OLS sample after SQC PCA-set filter: {len(ols_eids):,}")
+        elif anc_path and Path(anc_path).is_file():
+            anc2 = safe_read_table(anc_path)
+            anc2 = standardize_eid_column(anc2)
+            if "kin_keep" in anc2.columns:
+                keep_ids = anc2.loc[pd.to_numeric(anc2["kin_keep"], errors="coerce") == 1, "eid"]
+                ols_eids = set(int(x) for x in keep_ids if int(x) in lmm_eids)
+                funnel.append(_funnel_row("ols_unrelated_via_file", len(ols_eids), len(lmm_eids)))
+                log.info(f"OLS sample after relatedness file: {len(ols_eids):,}")
+            else:
+                log.warning(f"{anc_path} missing 'kin_keep'; OLS sample = LMM superset")
+                funnel.append(_funnel_row("ols_unrelated_skipped", len(ols_eids), len(lmm_eids)))
+        else:
+            log.warning("no relatedness source; OLS sample = LMM superset")
+            funnel.append(_funnel_row("ols_unrelated_skipped", len(ols_eids), len(lmm_eids)))
+    else:
+        funnel.append(_funnel_row("ols_unrelated_skipped", len(ols_eids), len(lmm_eids)))
+
+    # ---- step 5: MZ-twin filter for LMM keep list (drop_kinship_above)
+    lmm_keep_eids = set(lmm_eids)
+    drop_high = float(cfg.get("lmm", {}).get("drop_kinship_above", 0.354))
+    if rel_path and Path(rel_path).is_file() and drop_high > 0:
+        # _king_unrelated_keep returns the KEEP set after greedy prune at the
+        # given threshold; any eid in lmm_eids not in that set was dropped.
+        kept_after_mz_prune = _king_unrelated_keep(merged["eid"], rel_path, drop_high, log)
+        dropped = lmm_eids - set(int(x) for x in kept_after_mz_prune)
+        if dropped:
+            log.info(f"LMM keep list: dropping {len(dropped):,} eids with kinship ≥ {drop_high}")
+            lmm_keep_eids = lmm_eids - dropped
+        funnel.append(_funnel_row(f"lmm_keep_kinship<{drop_high}", len(lmm_keep_eids), len(lmm_eids)))
+    else:
+        funnel.append(_funnel_row("lmm_keep_no_mz_filter", len(lmm_keep_eids), len(lmm_eids)))
+
+    # ---- step 6: variant-wide QC
     if qc_path.is_file():
         qc = pd.read_csv(qc_path)
         info = qc["info_mfi"].iloc[0] if "info_mfi" in qc.columns and len(qc) else np.nan
@@ -277,9 +299,22 @@ def main(argv: list[str] | None = None) -> int:
                       f"pass --force to override.")
             return 3
 
+    # ---- write outputs
     out_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_csv(out_path, sep="\t", index=False)
-    log.info(f"wrote {out_path} ({len(merged):,} rows, {len(merged.columns)} cols)")
+    log.info(f"wrote {out_path} (LMM superset: {len(merged):,} rows, {len(merged.columns)} cols)")
+
+    # Two-column FID IID keep lists (PLINK/REGENIE/BOLT format).
+    def _write_keep(path: Path, eids: set) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w") as fh:
+            for e in sorted(eids):
+                fh.write(f"{e}\t{e}\n")
+
+    _write_keep(keep_ols_path, ols_eids)
+    _write_keep(keep_lmm_path, lmm_keep_eids)
+    log.info(f"wrote {keep_ols_path} ({len(ols_eids):,} eids)")
+    log.info(f"wrote {keep_lmm_path} ({len(lmm_keep_eids):,} eids)")
 
     counts_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(funnel).to_csv(counts_path, index=False)

@@ -93,6 +93,28 @@ _METRIC_PANEL_DEFAULT = {
 }
 
 
+def _classify_family(description: str, metric: str, panel: str,
+                     primary_terms: list[str], controls_terms: list[str]) -> str:
+    """Map a phenotype row to its hierarchical-FDR family.
+
+    Single IDPs default to `exploratory` (the new PheWAS family). Myelin-sensitive
+    MRI (MTR/MTsat/MWF/qT1/T2*/R2*) → `primary`. WMH and any matched control
+    term → `controls`. Composites + ROI PCs are added later (step 04b) as
+    `secondary`.
+    """
+    desc_l = (description or "").lower()
+    metric_l = (metric or "").upper()
+    if primary_terms:
+        if any(t.lower() in desc_l for t in primary_terms):
+            return "primary"
+    if controls_terms:
+        if any(t.lower() in desc_l for t in controls_terms):
+            return "controls"
+    if "WMH" in metric_l or "WHITE_MATTER_HYPERINTENS" in metric_l.upper():
+        return "controls"
+    return "exploratory"
+
+
 def _classify_from_description(desc: str) -> tuple[str | None, str | None, str | None, str | None]:
     """Returns (metric, modality, panel_default, tract_name) by parsing the showcase Field text.
     All None if the description doesn't match any IDP pattern."""
@@ -188,6 +210,8 @@ def _build_manifest_from_basket(basket_path: str,
     header = read_header_only(basket_path)
     rows = []
     cols_to_read = ["f.eid"]
+    fam_primary_terms = list(cfg.get("families", {}).get("primary_terms", []))
+    fam_controls_terms = list(cfg.get("families", {}).get("controls_terms", []))
     for col in header:
         fid, inst, arr = _basket_col_to_field(col)
         if fid is None:
@@ -222,6 +246,10 @@ def _build_manifest_from_basket(basket_path: str,
         # Pull a fallback description from the single-IDP map if dictionary missing
         if not desc and fid in KNOWN_SINGLE_IDPS:
             desc = KNOWN_SINGLE_IDPS[fid][3]
+        panel_norm = ("secondary" if panel == "secondary" else
+                      ("primary" if panel == "primary" else "exploratory"))
+        family = _classify_family(desc, metric, panel_norm,
+                                  fam_primary_terms, fam_controls_terms)
         rows.append({
             "field_id": fid,
             "instance": inst,
@@ -232,8 +260,8 @@ def _build_manifest_from_basket(basket_path: str,
             "modality_guess": modality,
             "metric_guess": metric,
             "tract_or_region_guess": tract_disp,
-            "panel": "secondary" if panel == "secondary" else
-                     ("primary" if panel == "primary" else "exploratory"),
+            "panel": panel_norm,
+            "family": family,
             "transform": "log1p_then_rank_inverse" if (panel == "secondary"
                           and (metric == "WMH_volume" or "WMH" in metric)) else "rank_inverse_normal",
             "include": True if panel in ("primary", "secondary") else False,
@@ -354,6 +382,7 @@ def _derive_rd(wide: pd.DataFrame, manifest: pd.DataFrame,
                 "metric_guess": "RD",
                 "tract_or_region_guess": k,
                 "panel": "primary",
+                "family": "exploratory",
                 "transform": "rank_inverse_normal",
                 "include": True,
                 "notes": "derived",

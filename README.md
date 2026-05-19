@@ -2,7 +2,9 @@
 
 Reproducible local pipeline that tests whether **rs2546890** (chr5:159332892, GRCh38) allele dosage associates with UK Biobank MRI-derived white-matter / myelin phenotypes (FA, MD, L1–L3, RD, NODDI ICVF/ISOVF/ODI, WMH volume).
 
-The primary model is **OLS additive** on the inverse-rank-normalized IDP with full UKB covariate adjustment. A **genotypic** (AA/AG/GG vs GG) model is fit as a sensitivity check so the AA-vs-GG contrast can be read directly.
+The default engine is now a **mixed-model (REGENIE)** run in parallel with OLS for sensitivity. The pipeline organizes phenotypes into four families (primary myelin-sensitive / secondary composites + ROI PCs / exploratory single-IDP PheWAS / controls) and applies per-family Bonferroni + BH-FDR.
+
+> **Interpretation guardrail (enforced in `report_hierarchical.md`):** Ordinary diffusion MRI signals (FA, MD, L1-L3, ICVF, OD, ISOVF) are *indirect* and should not be labeled as myelination effects unless supported by myelin-sensitive MRI (MTR, MTsat, MWF, qT1) or orthogonal validation. The current expected interpretation is that rs2546890-A appears more consistent with a free-water or tract-geometry signal than a canonical demyelination signal unless the composite analysis below shows otherwise.
 
 ---
 
@@ -100,7 +102,17 @@ For rs2546890 on this machine, the variant matches as `5:158759900:A:G` (GRCh37)
 - **WMH** uses `log1p` then INRT.
 - **Multiple testing:** Bonferroni + BH-FDR per panel (primary / secondary).
 
-LMM (REGENIE/BOLT) is **not** the default. Setting `models.use_lmm: true` halts with a command template rather than silently falling back.
+**Hierarchical refactor:** the pipeline now ALSO computes biological composite phenotypes (`demyelination_like`, `free_water_like`, `axonal_loss_like`, `tract_geometry_like`) per tract and ROI-level PCA scores per prioritized tract, then applies per-family (primary / secondary / exploratory / controls) Bonferroni + BH-FDR in addition to the back-compat per-panel correction. See `src/04b_derive_composites_and_pca.py` and `report_hierarchical.md`.
+
+**Mixed-model engine:** by default (`models.engine: regenie+ols`) the pipeline runs REGENIE step 1 (LOCO null model, multi-phenotype) + step 2 (rs2546890 only) using the prior SI-loneliness REGENIE infrastructure (`/home/mabdel03/data/software/regenie/regenie`, HapMap3 BED at `…/ukb_genoHM3/ukb_genoHM3_bed`, model SNPs at `…/ukb_genoHM3_modelSNPs.txt`, imputed pgen at `/net/bmc-lab5/…/ukb_imp`). BOLT-LMM is available as a secondary engine (`engine: bolt` or `bolt+ols`) and by default runs only the 15-or-so composite + ROI-PC phenotypes.
+
+Engine choices in `models.engine`:
+- `ols`              — OLS only (back-compat)
+- `regenie`          — REGENIE LMM only
+- `bolt`             — BOLT-LMM only (composites + ROI PCs by default)
+- `regenie+ols`      — both, REGENIE is the report headline (default)
+- `bolt+ols`         — both, BOLT is the report headline
+- `all`              — all three engines
 
 ---
 
@@ -109,17 +121,32 @@ LMM (REGENIE/BOLT) is **not** the default. Setting `models.use_lmm: true` halts 
 | File | What |
 |---|---|
 | `results/genotype_qc_summary.csv` | rsID, alleles, EAF, missingness, hardcalls, HWE p, INFO, method |
-| `results/phenotype_manifest.csv` | one row per IDP (panel, transform, include flag) |
+| `results/phenotype_manifest.csv` | one row per IDP (panel, family, transform, include flag) |
 | `results/sample_counts.csv` | sample funnel (n at every QC step) |
 | `results/covariate_missingness.csv` | per-covariate missing n/% |
-| `results/association_results_primary.csv` | β, SE, t, p, n, FDR, Bonferroni, `aa_vs_gg_additive_2beta` |
-| `results/association_results_genotypic.csv` | AG-vs-GG, AA-vs-GG, 2-df Wald p |
-| `results/report.md` | run summary, top hits, sensitivity comparison, caveats |
+| `results/association_results_primary.csv` | β, SE, t, p, n, FDR, Bonferroni, `aa_vs_gg_additive_2beta` (OLS, single IDPs) |
+| `results/association_results_genotypic.csv` | AG-vs-GG, AA-vs-GG, 2-df Wald p (OLS) |
+| `results/association_results_composites.csv` | OLS on composite phenotypes (NEW) |
+| `results/association_results_roi_pca.csv` | OLS on ROI-PCA phenotypes (NEW) |
+| `results/association_results_*_lmm.csv` | parallel LMM (REGENIE/BOLT) results (NEW) |
+| `results/multiple_testing_summary.csv` | per-family test counts + hit counts (OLS, NEW) |
+| `results/multiple_testing_summary_lmm.csv` | per-family test counts + hit counts (LMM, NEW) |
+| `results/model_diagnostics_summary.csv` | per-phenotype r², cond no, BP/JB p (NEW) |
+| `results/composite_phenotypes.csv` | per-eid composite scores (NEW) |
+| `results/roi_pca_phenotypes.csv` | per-eid ROI PC scores (NEW) |
+| `results/roi_pca_loadings.csv` | per-tract PC1/PC2 metric loadings (NEW) |
+| `results/phenotype_tiers.csv` | phenotype → family / panel / metric / region (NEW) |
+| `results/report.md` | back-compat OLS run summary |
+| `results/report_hierarchical.md` | LMM headline + OLS sensitivity + composite-driven interpretation (NEW) |
 | `figures/qqplot_pvalues.png` | QQ of primary p-values |
 | `figures/manhattan_like_idp_results.png` | per-IDP −log10(p) grouped by panel/modality |
 | `figures/effect_size_forest_top_hits.png` | top-20 β±CI |
 | `figures/genotype_violin_top3.png` | optional: raw distributions by AA/AG/GG for top 3 |
+| `figures/effect_heatmap_by_tract_metric.png` | NEW: tracts × metrics, color=signed −log10(p) |
+| `figures/composite_effects_forest.png` | NEW: composite × tract β±CI |
+| `figures/top_roi_pca_loadings.png` | NEW: PC1 loadings for top-ranked tracts |
 | `logs/inspect_report.txt`, `logs/run_log.txt`, `logs/versions.txt`, `logs/model_warnings.txt` | diagnostics |
+| `logs/regenie_step{1,2}.log` | LMM driver logs |
 
 ---
 
@@ -147,6 +174,6 @@ LMM (REGENIE/BOLT) is **not** the default. Setting `models.use_lmm: true` halts 
 
 - BGEN code path is templated but **not exercised locally** (only pgen is available here).
 - UKB imaging confounds file (Smith et al. 2020 Resource 1977) is not on disk; only core imaging covariates (age, sex, site, head size, dMRI outlier slices) are included. Drop the official file into `inputs.imaging_confounds_file` to merge it in.
-- OLS only — set `use_lmm: true` to emit a REGENIE command template; no silent LMM fallback.
+- LMM engines (REGENIE primary, BOLT-LMM secondary) are now first-class run targets via `models.engine`. The legacy `models.use_lmm` flag is preserved but superseded.
 - Hard-call genotypes are assigned only where dosage falls within `1 - hardcall_probability_threshold` of an integer; samples below that are NA for the genotypic model but kept for the additive one.
 - The local imputed pgen is **GRCh37** despite the path naming suggesting v3. If you swap in a GRCh38 source, flip `variant.pgen_build: "GRCh38"` so the extractor queries with `pos_grch38` instead.
