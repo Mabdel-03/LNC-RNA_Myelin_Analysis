@@ -2,7 +2,7 @@
 #SBATCH -J lncrna_regenie
 #SBATCH -p kellis
 #SBATCH -n 16
-#SBATCH --mem=200G
+#SBATCH --mem=300G
 #SBATCH -t 48:00:00
 #SBATCH -o logs/sbatch/lncrna_regenie_%j.out
 #SBATCH -e logs/sbatch/lncrna_regenie_%j.err

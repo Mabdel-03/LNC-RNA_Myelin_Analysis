@@ -2,7 +2,7 @@
 #SBATCH -J lncrna_bolt
 #SBATCH -p kellis
 #SBATCH -n 32
-#SBATCH --mem=200G
+#SBATCH --mem=300G
 #SBATCH -t 48:00:00
 #SBATCH -o logs/sbatch/lncrna_bolt_%j.out
 #SBATCH -e logs/sbatch/lncrna_bolt_%j.err
