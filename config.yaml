@@ -253,7 +253,7 @@ lmm:
     binary: "/home/mabdel03/data/conda_envs/regenie_env/bin/regenie"  # v3.4.1, no libmvec needed
     hm3_bed_prefix: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/geno/ukb_genoHM3/ukb_genoHM3_bed"
     model_snps:    "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/geno/ukb_genoHM3/ukb_genoHM3_modelSNPs.txt"
-    step2_pgen_prefix: "/net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp"
+    step2_pgen_prefix: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/UKBB-SI-Genetics/2_GWAS/REGENIE/results/input/ukb_imp_regenie"   # decompressed-pvar trio; REGENIE can't read .pvar.zst
     reuse_step1: true                    # if pheno set hash matches, skip step 1
     skip_step1: false                    # force-skip even without hash match (debugging)
     min_mac: 20
