@@ -20,7 +20,7 @@
 # Skip OLS (only run REGENIE LMM):
 #   sbatch --export=ENGINE_OVERRIDE=regenie scripts/sbatch/pipeline_regenie.sbatch.sh
 
-set -euo pipefail
+set -eo pipefail   # NOTE: NOT -u — conda activate scripts reference unbound vars
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
@@ -29,10 +29,10 @@ mkdir -p logs/sbatch
 if command -v module >/dev/null 2>&1; then
     module load miniconda3/v4 || true
 fi
-if [ -f /home/software/conda/miniconda3/etc/profile.d/conda.sh ]; then
+if [ -f /home/software/conda/miniconda3/bin/condainit ]; then
+    source /home/software/conda/miniconda3/bin/condainit
+elif [ -f /home/software/conda/miniconda3/etc/profile.d/conda.sh ]; then
     source /home/software/conda/miniconda3/etc/profile.d/conda.sh
-elif command -v conda >/dev/null 2>&1; then
-    source "$(conda info --base)/etc/profile.d/conda.sh"
 fi
 conda activate /home/mabdel03/data/conda_envs/Python_Analysis
 export PATH="${PATH}:/home/mabdel03/data/conda_envs/GWAS_env/bin"
