@@ -1,0 +1,153 @@
+# =========================================================================
+# rs2546890 → UKBB MRI white-matter / myelin IDP association — config
+# Edit paths below to match your local installation. All scripts read this
+# file via --config. Empty string ("") means "not provided — code will skip
+# or fall back to an alternate path described in src/01_extract_variant.py
+# and the README."
+# =========================================================================
+
+project:
+  output_dir: "./results"                # results / sample_counts / report.md land here
+  figures_dir: "./figures"
+  logs_dir: "./logs"
+  intermediate_dir: "./results/intermediate"
+  random_seed: 12345
+  dry_run: false                         # 00 runs full; 01-05 only validate. CLI flag --dry-run also forces this.
+  test_mode: false                       # cap to max_test_phenotypes during dev
+  max_test_phenotypes: 3
+  overwrite: false                       # if false, writes go to a timestamped subdir of output_dir
+  conda_env: "Python_Analysis"           # sourced by scripts/run_all.sh
+
+inputs:
+  # ---- phenotype side ----
+  phenotype_file: ""                     # optional single wide pheno CSV (alternative to mri_pheno_tsv_dirs+basket)
+  # Official UKB Data Dictionary — used to label phenotypes/covariates with the showcase Field text.
+  data_dictionary_file: "/net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/pheno/downloads/Data_Dictionary_Showcase.csv"
+  basket_tab: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Basket_Files/ukb675079.tab"
+  mri_pheno_tsv_dirs:
+    - "/net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/GWAS/phenotypes/MRI_Phenos/Pheno_Files"
+    - "/net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/GWAS/phenotypes/Run2_Phenos/Create_Phenos/MRI"
+  extract_phenotype_sh: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/UKBB-SI-Genetics/1_Phenotype_Creation/extract_phenotype.sh"
+
+  # ---- genotype side ----
+  # Primary path: imputed pgen (GRCh38). If pgen_prefix is set, 01_extract_variant.py uses plink2 on it.
+  pgen_prefix: "/net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp"
+  variant_metadata_file: "/net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_mfi_v3.tsv.zst"
+
+  # Fallback paths (used only if pgen_prefix is empty / extraction fails)
+  chr5_bgen: ""
+  sample_file: ""
+
+  # Skip extraction entirely if you have your own dosage CSV (cols: eid, dosage_A, [genotype])
+  preextracted_variant_dosage_file: ""
+
+  # ---- covariates / sample QC ----
+  # UKB Sample-QC table (SQC). Has FID/IID, population, population_MM, sex, age,
+  # genotyping_array, used_in_pca_calculation, pass_QC_filter, sr_WB, UKB_PC1..PC40.
+  # Step 03 reads PCs/age/sex/array from here; step 04 uses the SQC flags for
+  # ancestry + unrelated filtering (no separate ancestry_relatedness_file needed).
+  genetic_covariates_file: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/sqc/sqc.20220316.tsv.gz"
+  imaging_confounds_file: ""             # optional Smith-style UKB Resource 1977 file (not present locally)
+  # Optional KING relatedness pairs (.dat or .dat.gz, cols: ID1 ID2 HetHet IBS0 Kinship).
+  # If set, step 04 graph-prunes pairs with Kinship >= sample.kinship_threshold.
+  # If empty, step 04 falls back to SQC's used_in_pca_calculation flag.
+  relatedness_file: "/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/sqc/downloads/ukb_rel_a21942_s488172.dat.gz"
+  # Legacy single-file combined keep list (eid, ancestry_label, kin_keep). Empty here
+  # because we use the SQC + KING combo above instead.
+  ancestry_relatedness_file: ""
+
+variant:
+  rsid: "rs2546890"
+  chr: 5
+  pos_grch38: 159332892
+  pos_grch37: 158759900                  # IL12B locus; UKB imputation v3 pgen is GRCh37-native
+  effect_allele: "A"
+  other_allele: "G"
+  # Which build is the genotype source on? Affects which pos_* is used to query.
+  # "GRCh37" or "GRCh38". Auto-falls-back to whichever match the pgen returns.
+  pgen_build: "GRCh37"
+  min_info: 0.8
+  max_missing_rate: 0.05
+  hardcall_probability_threshold: 0.9
+
+sample:
+  restrict_to_unrelated: true
+  restrict_to_ancestry: true
+  # "White British" maps to SQC population_MM == "WB_MM" (also matched by population == "WB" or sr_WB == 1).
+  # "EUR" maps to any of population in {WB,NBW} (broader European set).
+  ancestry_label: "White British"
+  # KING kinship threshold for graph pruning if relatedness_file is set.
+  # 0.0884 = 3rd-degree relatives or closer (standard UKB cutoff).
+  kinship_threshold: 0.0884
+  exclude_neurological_disease_if_available: false
+
+phenotypes:
+  require_manual_manifest_approval: false   # set true after first run to lock the manifest
+  primary_terms:
+    - "fractional anisotropy"
+    - "mean diffusivity"
+    - "radial diffusivity"
+    - "intracellular volume fraction"
+    - "isotropic volume fraction"
+    - "orientation dispersion"
+    - "NODDI"
+    - "L1"
+    - "L2"
+    - "L3"
+  secondary_terms:
+    - "white matter hyperintensity"
+    - "WMH"
+    - "T2 FLAIR"
+  exploratory_terms:
+    - "diffusion"
+    - "tract"
+  prioritize_regions:
+    - "corpus callosum"
+    - "genu"
+    - "splenium"
+    - "internal capsule"
+    - "corticospinal"
+    - "superior longitudinal"
+    - "cingulum"
+    - "optic radiation"
+    - "posterior thalamic"
+    - "corona radiata"
+
+covariates:
+  genetic_pc_count: 20
+  include_age2: true
+  include_age_by_sex: true
+  required_terms:
+    - "age at imaging"
+    - "sex"
+    - "genotyping array"
+    - "genetic principal component"
+  optional_terms:
+    - "assessment centre"
+    - "imaging centre"
+    - "head size"
+    - "motion"
+    - "table position"
+    - "acquisition date"
+  # UKB field-id hints (used if metadata-term search fails). Override per-cohort as needed.
+  field_hints:
+    age_at_imaging: ["21003-2.0", "21022"]
+    sex: ["31-0.0", "31"]
+    imaging_centre: ["54-2.0"]
+    head_size_scaling: ["25000-2.0"]
+    head_motion_dmri: ["25746-2.0"]      # number of dMRI outlier slices (true dMRI QC proxy)
+    array: ["22000-0.0"]
+    acquisition_date: ["53-2.0"]
+    pc_prefix: "22009-0."                # PCs are 22009-0.1 ... 22009-0.40
+
+models:
+  primary_model: "ols_additive"
+  use_lmm: false                         # true → halt with REGENIE command template; no silent fallback
+  phenotype_transform: "inverse_rank_normal"
+  outlier_z_threshold: 6
+  multiple_testing:
+    - "bonferroni"
+    - "bh_fdr"
+  run_genotypic_sensitivity: true
+  run_recessive_sensitivity: false
+  run_dominant_sensitivity: false

@@ -1,0 +1,2 @@
+rsid,chr,pos_grch38,effect_allele,other_allele,extraction_method,dosage_mean,dosage_sd,eaf_estimated,missing_n,missing_pct,n_total,hardcall_AA,hardcall_AG,hardcall_GG,hwe_p,info_mfi,mfi_a1,mfi_a2,mfi_maf
+rs2546890,5,159332892,A,G,plink2_pgen,1.0320654727343976,0.7085471394746443,0.5160327363671988,0,0.0,487409,130414,242210,114785,0.0003608555846144057,1.0,A,G,0.483967

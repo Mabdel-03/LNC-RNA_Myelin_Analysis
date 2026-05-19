@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Individual-level UKB data (genotypes, per-eid phenotypes, joined sample) —
+# do NOT commit per UKB data sharing terms.
+results/intermediate/
+results/variant/
+
+# Per-run timestamped output dirs (only relevant if overwrite=false)
+results/2*/
+
+# Verbose logs — keep inspect_report + model_warnings + versions (small,
+# useful for reproducibility); skip the giant per-step run log.
+logs/run_log.txt
+logs/*.log
+
+# OS junk
+.DS_Store

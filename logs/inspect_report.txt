@@ -1,0 +1,47 @@
+========================================================================
+rs2546890 → UKBB MRI IDP pipeline — input inspection
+========================================================================
+
+repo_root: /net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/lnc_rna_mri
+config:    config.yaml
+
+[inputs] single files
+  phenotype_file                            NOT_SET     (empty)
+  data_dictionary_file                      FOUND       /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/pheno/downloads/Data_Dictionary_Showcase.csv
+  basket_tab                                FOUND       /home/mabdel03/data/files/Isolation_Genetics/GWAS/Basket_Files/ukb675079.tab
+  extract_phenotype_sh                      FOUND       /home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/UKBB-SI-Genetics/1_Phenotype_Creation/extract_phenotype.sh
+  variant_metadata_file                     FOUND       /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_mfi_v3.tsv.zst
+  chr5_bgen                                 NOT_SET     (empty)
+  sample_file                               NOT_SET     (empty)
+  preextracted_variant_dosage_file          NOT_SET     (empty)
+  genetic_covariates_file                   FOUND       /home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/sqc/sqc.20220316.tsv.gz
+  imaging_confounds_file                    NOT_SET     (empty)
+  ancestry_relatedness_file                 NOT_SET     (empty)
+
+[inputs] mri_pheno_tsv_dirs
+  DIR_OK     (    1 tsv)  /net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/GWAS/phenotypes/MRI_Phenos/Pheno_Files
+  DIR_OK     (    5 tsv)  /net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/GWAS/phenotypes/Run2_Phenos/Create_Phenos/MRI
+
+[inputs] pgen trio
+  FOUND       /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp.pgen
+  FOUND       /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp.psam
+  MISSING     /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp.pvar
+  FOUND       /net/bmc-lab5/data/kellis/group/tanigawa/data/ukb21942/imp/ukb_imp.pvar.zst
+
+[tools]
+  plink2      /home/mabdel03/data/conda_envs/GWAS_env/bin/plink2
+  qctool      NOT_ON_PATH
+  bgenix      NOT_ON_PATH
+  regenie     NOT_ON_PATH
+  bcftools    NOT_ON_PATH
+  tabix       NOT_ON_PATH
+
+[versions] written to /net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/lnc_rna_mri/logs/versions.txt
+
+[pre-flight]
+  variant extraction → plink2 on pgen (PRIMARY)
+  phenotype source available: YES
+  covariate source available:  YES
+  dry_run flag in config:       False
+
+========================================================================
