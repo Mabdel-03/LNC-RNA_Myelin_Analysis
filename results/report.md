@@ -1,6 +1,6 @@
 # rs2546890 → UKBB MRI IDP association — report
 
-_generated: 2026-05-19T18:28:40_
+_generated: 2026-05-19T20:18:17_
 
 ## Variant
 - rsID: **rs2546890**
