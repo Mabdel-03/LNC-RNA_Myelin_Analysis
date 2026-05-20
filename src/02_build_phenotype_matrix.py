@@ -360,27 +360,37 @@ def _derive_rd(wide: pd.DataFrame, manifest: pd.DataFrame,
                            & (manifest["metric_guess"] == "RD")]
         if l2_rows.empty or l3_rows.empty or not rd_rows.empty:
             continue
-        # Match by tract index suffix in column_name
-        def _tract_key(name: str) -> str:
-            return name.rsplit("_", 1)[-1]
-        l2_map = dict(zip(l2_rows["column_name"].map(_tract_key), l2_rows["column_name"]))
-        l3_map = dict(zip(l3_rows["column_name"].map(_tract_key), l3_rows["column_name"]))
+        # Match by FULL post-metric tract suffix. Column names look like
+        # "dMRI_TBSS_L2_acoustic_radiation_left" — split off the
+        # "{modality}_{metric}_" prefix and use everything after as the key.
+        # (The earlier .rsplit("_",1)[-1] collapsed every "*_left" tract
+        # into one row, dropping us from ~75 RD to ~16.)
+        l2_prefix = f"{modality}_L2_"
+        l3_prefix = f"{modality}_L3_"
+        def _strip(name: str, prefix: str) -> str:
+            return name[len(prefix):] if name.startswith(prefix) else name
+        l2_map = {_strip(c, l2_prefix): c for c in l2_rows["column_name"]}
+        l3_map = {_strip(c, l3_prefix): c for c in l3_rows["column_name"]}
         for k in sorted(set(l2_map) & set(l3_map)):
             rd_col = f"{modality}_RD_{k}"
             if rd_col in wide.columns:
                 continue
             wide[rd_col] = (pd.to_numeric(wide[l2_map[k]], errors="coerce") +
                             pd.to_numeric(wide[l3_map[k]], errors="coerce")) / 2.0
+            # Reuse the L2 row's tract_or_region_guess so the derived RD row
+            # keeps the human-readable tract name (not the slugified suffix).
+            tract_disp = l2_rows.loc[l2_rows["column_name"] == l2_map[k],
+                                       "tract_or_region_guess"].iloc[0]
             new_rows.append({
                 "field_id": np.nan,
                 "instance": 2,
                 "array": 0,
                 "basket_col": "",
                 "column_name": rd_col,
-                "description": f"Derived RD=(L2+L3)/2 for {modality} tract {k}",
+                "description": f"Derived RD=(L2+L3)/2 for {modality} tract {tract_disp}",
                 "modality_guess": modality,
                 "metric_guess": "RD",
-                "tract_or_region_guess": k,
+                "tract_or_region_guess": tract_disp,
                 "panel": "primary",
                 "family": "exploratory",
                 "transform": "rank_inverse_normal",

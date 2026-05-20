@@ -679,21 +679,79 @@ rfMRI_motion,exploratory,exploratory,rfMRI,rfMRI_motion,,basket,False
 tfMRI_motion,exploratory,exploratory,tfMRI,tfMRI_motion,,basket,False
 dMRI_outlier_slices,exploratory,exploratory,dMRI,dMRI_outlier_slices,,basket,False
 WMH_volume,controls,secondary,T2_FLAIR,WMH_volume,,basket,True
-dMRI_TBSS_RD_callosum,exploratory,primary,dMRI_TBSS,RD,callosum,derived,True
+dMRI_TBSS_RD_anterior_corona_radiata_left,exploratory,primary,dMRI_TBSS,RD,anterior corona radiata (left),derived,True
+dMRI_TBSS_RD_anterior_corona_radiata_right,exploratory,primary,dMRI_TBSS,RD,anterior corona radiata (right),derived,True
+dMRI_TBSS_RD_anterior_limb_of_internal_capsule_left,exploratory,primary,dMRI_TBSS,RD,anterior limb of internal capsule (left),derived,True
+dMRI_TBSS_RD_anterior_limb_of_internal_capsule_right,exploratory,primary,dMRI_TBSS,RD,anterior limb of internal capsule (right),derived,True
+dMRI_TBSS_RD_body_of_corpus_callosum,exploratory,primary,dMRI_TBSS,RD,body of corpus callosum,derived,True
+dMRI_TBSS_RD_cerebral_peduncle_left,exploratory,primary,dMRI_TBSS,RD,cerebral peduncle (left),derived,True
+dMRI_TBSS_RD_cerebral_peduncle_right,exploratory,primary,dMRI_TBSS,RD,cerebral peduncle (right),derived,True
+dMRI_TBSS_RD_cingulum_cingulate_gyrus_left,exploratory,primary,dMRI_TBSS,RD,cingulum cingulate gyrus (left),derived,True
+dMRI_TBSS_RD_cingulum_cingulate_gyrus_right,exploratory,primary,dMRI_TBSS,RD,cingulum cingulate gyrus (right),derived,True
+dMRI_TBSS_RD_cingulum_hippocampus_left,exploratory,primary,dMRI_TBSS,RD,cingulum hippocampus (left),derived,True
+dMRI_TBSS_RD_cingulum_hippocampus_right,exploratory,primary,dMRI_TBSS,RD,cingulum hippocampus (right),derived,True
+dMRI_TBSS_RD_corticospinal_tract_left,exploratory,primary,dMRI_TBSS,RD,corticospinal tract (left),derived,True
+dMRI_TBSS_RD_corticospinal_tract_right,exploratory,primary,dMRI_TBSS,RD,corticospinal tract (right),derived,True
+dMRI_TBSS_RD_external_capsule_left,exploratory,primary,dMRI_TBSS,RD,external capsule (left),derived,True
+dMRI_TBSS_RD_external_capsule_right,exploratory,primary,dMRI_TBSS,RD,external capsule (right),derived,True
 dMRI_TBSS_RD_fornix,exploratory,primary,dMRI_TBSS,RD,fornix,derived,True
-dMRI_TBSS_RD_lef,exploratory,primary,dMRI_TBSS,RD,lef,derived,True
-dMRI_TBSS_RD_left,exploratory,primary,dMRI_TBSS,RD,left,derived,True
-dMRI_TBSS_RD_peduncle,exploratory,primary,dMRI_TBSS,RD,peduncle,derived,True
-dMRI_TBSS_RD_rig,exploratory,primary,dMRI_TBSS,RD,rig,derived,True
-dMRI_TBSS_RD_right,exploratory,primary,dMRI_TBSS,RD,right,derived,True
-dMRI_TBSS_RD_tract,exploratory,primary,dMRI_TBSS,RD,tract,derived,True
-dMRI_weighted_mean_RD_lef,exploratory,primary,dMRI_weighted_mean,RD,lef,derived,True
-dMRI_weighted_mean_RD_left,exploratory,primary,dMRI_weighted_mean,RD,left,derived,True
-dMRI_weighted_mean_RD_major,exploratory,primary,dMRI_weighted_mean,RD,major,derived,True
-dMRI_weighted_mean_RD_minor,exploratory,primary,dMRI_weighted_mean,RD,minor,derived,True
-dMRI_weighted_mean_RD_peduncle,exploratory,primary,dMRI_weighted_mean,RD,peduncle,derived,True
-dMRI_weighted_mean_RD_rig,exploratory,primary,dMRI_weighted_mean,RD,rig,derived,True
-dMRI_weighted_mean_RD_right,exploratory,primary,dMRI_weighted_mean,RD,right,derived,True
+dMRI_TBSS_RD_fornix_cres_stria_terminalis_left,exploratory,primary,dMRI_TBSS,RD,fornix cres+stria terminalis (left),derived,True
+dMRI_TBSS_RD_fornix_cres_stria_terminalis_right,exploratory,primary,dMRI_TBSS,RD,fornix cres+stria terminalis (right),derived,True
+dMRI_TBSS_RD_genu_of_corpus_callosum,exploratory,primary,dMRI_TBSS,RD,genu of corpus callosum,derived,True
+dMRI_TBSS_RD_inferior_cerebellar_peduncle_left,exploratory,primary,dMRI_TBSS,RD,inferior cerebellar peduncle (left),derived,True
+dMRI_TBSS_RD_inferior_cerebellar_peduncle_right,exploratory,primary,dMRI_TBSS,RD,inferior cerebellar peduncle (right),derived,True
+dMRI_TBSS_RD_medial_lemniscus_left,exploratory,primary,dMRI_TBSS,RD,medial lemniscus (left),derived,True
+dMRI_TBSS_RD_medial_lemniscus_right,exploratory,primary,dMRI_TBSS,RD,medial lemniscus (right),derived,True
+dMRI_TBSS_RD_middle_cerebellar_peduncle,exploratory,primary,dMRI_TBSS,RD,middle cerebellar peduncle,derived,True
+dMRI_TBSS_RD_pontine_crossing_tract,exploratory,primary,dMRI_TBSS,RD,pontine crossing tract,derived,True
+dMRI_TBSS_RD_posterior_corona_radiata_left,exploratory,primary,dMRI_TBSS,RD,posterior corona radiata (left),derived,True
+dMRI_TBSS_RD_posterior_corona_radiata_right,exploratory,primary,dMRI_TBSS,RD,posterior corona radiata (right),derived,True
+dMRI_TBSS_RD_posterior_limb_of_internal_capsule_left,exploratory,primary,dMRI_TBSS,RD,posterior limb of internal capsule (left),derived,True
+dMRI_TBSS_RD_posterior_limb_of_internal_capsule_right,exploratory,primary,dMRI_TBSS,RD,posterior limb of internal capsule (right),derived,True
+dMRI_TBSS_RD_posterior_thalamic_radiation_left,exploratory,primary,dMRI_TBSS,RD,posterior thalamic radiation (left),derived,True
+dMRI_TBSS_RD_posterior_thalamic_radiation_right,exploratory,primary,dMRI_TBSS,RD,posterior thalamic radiation (right),derived,True
+dMRI_TBSS_RD_sagittal_stratum_left,exploratory,primary,dMRI_TBSS,RD,sagittal stratum (left),derived,True
+dMRI_TBSS_RD_sagittal_stratum_right,exploratory,primary,dMRI_TBSS,RD,sagittal stratum (right),derived,True
+dMRI_TBSS_RD_splenium_of_corpus_callosum,exploratory,primary,dMRI_TBSS,RD,splenium of corpus callosum,derived,True
+dMRI_TBSS_RD_superior_cerebellar_peduncle_left,exploratory,primary,dMRI_TBSS,RD,superior cerebellar peduncle (left),derived,True
+dMRI_TBSS_RD_superior_cerebellar_peduncle_right,exploratory,primary,dMRI_TBSS,RD,superior cerebellar peduncle (right),derived,True
+dMRI_TBSS_RD_superior_corona_radiata_left,exploratory,primary,dMRI_TBSS,RD,superior corona radiata (left),derived,True
+dMRI_TBSS_RD_superior_corona_radiata_right,exploratory,primary,dMRI_TBSS,RD,superior corona radiata (right),derived,True
+dMRI_TBSS_RD_superior_fronto_occipital_fasciculus_lef,exploratory,primary,dMRI_TBSS,RD,superior fronto-occipital fasciculus (left),derived,True
+dMRI_TBSS_RD_superior_fronto_occipital_fasciculus_rig,exploratory,primary,dMRI_TBSS,RD,superior fronto-occipital fasciculus (right),derived,True
+dMRI_TBSS_RD_superior_longitudinal_fasciculus_left,exploratory,primary,dMRI_TBSS,RD,superior longitudinal fasciculus (left),derived,True
+dMRI_TBSS_RD_superior_longitudinal_fasciculus_right,exploratory,primary,dMRI_TBSS,RD,superior longitudinal fasciculus (right),derived,True
+dMRI_TBSS_RD_tapetum_left,exploratory,primary,dMRI_TBSS,RD,tapetum (left),derived,True
+dMRI_TBSS_RD_tapetum_right,exploratory,primary,dMRI_TBSS,RD,tapetum (right),derived,True
+dMRI_TBSS_RD_uncinate_fasciculus_left,exploratory,primary,dMRI_TBSS,RD,uncinate fasciculus (left),derived,True
+dMRI_TBSS_RD_uncinate_fasciculus_right,exploratory,primary,dMRI_TBSS,RD,uncinate fasciculus (right),derived,True
+dMRI_weighted_mean_RD_acoustic_radiation_left,exploratory,primary,dMRI_weighted_mean,RD,acoustic radiation (left),derived,True
+dMRI_weighted_mean_RD_acoustic_radiation_right,exploratory,primary,dMRI_weighted_mean,RD,acoustic radiation (right),derived,True
+dMRI_weighted_mean_RD_anterior_thalamic_radiation_left,exploratory,primary,dMRI_weighted_mean,RD,anterior thalamic radiation (left),derived,True
+dMRI_weighted_mean_RD_anterior_thalamic_radiation_right,exploratory,primary,dMRI_weighted_mean,RD,anterior thalamic radiation (right),derived,True
+dMRI_weighted_mean_RD_cingulate_gyrus_part_of_cingulum_left,exploratory,primary,dMRI_weighted_mean,RD,cingulate gyrus part of cingulum (left),derived,True
+dMRI_weighted_mean_RD_cingulate_gyrus_part_of_cingulum_right,exploratory,primary,dMRI_weighted_mean,RD,cingulate gyrus part of cingulum (right),derived,True
+dMRI_weighted_mean_RD_corticospinal_tract_left,exploratory,primary,dMRI_weighted_mean,RD,corticospinal tract (left),derived,True
+dMRI_weighted_mean_RD_corticospinal_tract_right,exploratory,primary,dMRI_weighted_mean,RD,corticospinal tract (right),derived,True
+dMRI_weighted_mean_RD_forceps_major,exploratory,primary,dMRI_weighted_mean,RD,forceps major,derived,True
+dMRI_weighted_mean_RD_forceps_minor,exploratory,primary,dMRI_weighted_mean,RD,forceps minor,derived,True
+dMRI_weighted_mean_RD_inferior_fronto_occipital_fasciculus_lef,exploratory,primary,dMRI_weighted_mean,RD,inferior fronto-occipital fasciculus (left),derived,True
+dMRI_weighted_mean_RD_inferior_fronto_occipital_fasciculus_rig,exploratory,primary,dMRI_weighted_mean,RD,inferior fronto-occipital fasciculus (right),derived,True
+dMRI_weighted_mean_RD_inferior_longitudinal_fasciculus_left,exploratory,primary,dMRI_weighted_mean,RD,inferior longitudinal fasciculus (left),derived,True
+dMRI_weighted_mean_RD_inferior_longitudinal_fasciculus_right,exploratory,primary,dMRI_weighted_mean,RD,inferior longitudinal fasciculus (right),derived,True
+dMRI_weighted_mean_RD_medial_lemniscus_left,exploratory,primary,dMRI_weighted_mean,RD,medial lemniscus (left),derived,True
+dMRI_weighted_mean_RD_medial_lemniscus_right,exploratory,primary,dMRI_weighted_mean,RD,medial lemniscus (right),derived,True
+dMRI_weighted_mean_RD_middle_cerebellar_peduncle,exploratory,primary,dMRI_weighted_mean,RD,middle cerebellar peduncle,derived,True
+dMRI_weighted_mean_RD_parahippocampal_part_of_cingulum_left,exploratory,primary,dMRI_weighted_mean,RD,parahippocampal part of cingulum (left),derived,True
+dMRI_weighted_mean_RD_parahippocampal_part_of_cingulum_right,exploratory,primary,dMRI_weighted_mean,RD,parahippocampal part of cingulum (right),derived,True
+dMRI_weighted_mean_RD_posterior_thalamic_radiation_left,exploratory,primary,dMRI_weighted_mean,RD,posterior thalamic radiation (left),derived,True
+dMRI_weighted_mean_RD_posterior_thalamic_radiation_right,exploratory,primary,dMRI_weighted_mean,RD,posterior thalamic radiation (right),derived,True
+dMRI_weighted_mean_RD_superior_longitudinal_fasciculus_left,exploratory,primary,dMRI_weighted_mean,RD,superior longitudinal fasciculus (left),derived,True
+dMRI_weighted_mean_RD_superior_longitudinal_fasciculus_right,exploratory,primary,dMRI_weighted_mean,RD,superior longitudinal fasciculus (right),derived,True
+dMRI_weighted_mean_RD_superior_thalamic_radiation_left,exploratory,primary,dMRI_weighted_mean,RD,superior thalamic radiation (left),derived,True
+dMRI_weighted_mean_RD_superior_thalamic_radiation_right,exploratory,primary,dMRI_weighted_mean,RD,superior thalamic radiation (right),derived,True
+dMRI_weighted_mean_RD_uncinate_fasciculus_left,exploratory,primary,dMRI_weighted_mean,RD,uncinate fasciculus (left),derived,True
+dMRI_weighted_mean_RD_uncinate_fasciculus_right,exploratory,primary,dMRI_weighted_mean,RD,uncinate fasciculus (right),derived,True
 demyelination_like__wm__acoustic_radiation_left,secondary,secondary,dMRI_composite_wm,demyelination_like,acoustic radiation (left),composite,True
 demyelination_like__wm__acoustic_radiation_right,secondary,secondary,dMRI_composite_wm,demyelination_like,acoustic radiation (right),composite,True
 demyelination_like__tbss__anterior_corona_radiata_left,secondary,secondary,dMRI_composite_tbss,demyelination_like,anterior corona radiata (left),composite,True

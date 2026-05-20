@@ -1,202 +1,224 @@
 tract,tract_query,metric,loading,pc,explained_variance_ratio
-superior cerebellar peduncle (left),superior cerebellar peduncle,FA_tbss,-0.38444449135466874,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,MD_tbss,0.4032259407607186,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,MO_tbss,-0.17659673451662508,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,L1_tbss,0.15795029935427915,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,L2_tbss,0.46151216317457916,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,L3_tbss,0.45909517391718097,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,ICVF_tbss,-0.21907029121608843,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,OD_tbss,0.1776654625042047,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,ISOVF_tbss,0.3607740366547752,PC1,0.5001863635127333
-superior cerebellar peduncle (left),superior cerebellar peduncle,FA_tbss,0.296630798685286,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,MD_tbss,0.30030000099956755,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,MO_tbss,0.438517660150217,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,L1_tbss,0.5352805584721354,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,L2_tbss,-0.04709908108825321,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,L3_tbss,0.030536922534679663,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,ICVF_tbss,0.1803002026006732,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,OD_tbss,-0.4555379445697866,PC2,0.3117657497519872
-superior cerebellar peduncle (left),superior cerebellar peduncle,ISOVF_tbss,0.3159640091073215,PC2,0.3117657497519872
-superior cerebellar peduncle (right),superior cerebellar peduncle,FA_tbss,-0.36819794150947777,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,MD_tbss,0.4142891632421182,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,MO_tbss,-0.17147398310020587,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,L1_tbss,0.1833320495118695,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,L2_tbss,0.46473092022953094,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,L3_tbss,0.4617090976720847,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,ICVF_tbss,-0.1925552339875811,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,OD_tbss,0.1422893193651199,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,ISOVF_tbss,0.3785589917012915,PC1,0.49239892729056345
-superior cerebellar peduncle (right),superior cerebellar peduncle,FA_tbss,0.3310517564836806,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,MD_tbss,0.2832223586167378,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,MO_tbss,0.4440207898026908,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,L1_tbss,0.5207357393152569,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,L2_tbss,-0.05961684804633637,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,L3_tbss,0.004293815685186098,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,ICVF_tbss,0.148511091652231,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,OD_tbss,-0.4839721485954197,PC2,0.30909647441999133
-superior cerebellar peduncle (right),superior cerebellar peduncle,ISOVF_tbss,0.2863781900695423,PC2,0.30909647441999133
-body of corpus callosum,corpus callosum,FA_tbss,-0.3984132992654186,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,MD_tbss,0.4086537238138309,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,MO_tbss,-0.2692246499312697,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,L1_tbss,0.19787016316019074,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,L2_tbss,0.4253609971571605,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,L3_tbss,0.4235620990166782,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,ICVF_tbss,-0.26801382574009136,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,OD_tbss,0.1368692889429551,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,ISOVF_tbss,0.33426489602161297,PC1,0.5945760935828243
-body of corpus callosum,corpus callosum,FA_tbss,-0.18463686959706888,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,MD_tbss,-0.21816468373366055,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,MO_tbss,-0.44307989754533983,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,L1_tbss,-0.5522292410409065,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,L2_tbss,0.05690735674282486,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,L3_tbss,-0.04073282295413442,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,ICVF_tbss,0.11880830838421405,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,OD_tbss,0.6105604792146762,PC2,0.22668889241874585
-body of corpus callosum,corpus callosum,ISOVF_tbss,-0.15886895181293614,PC2,0.22668889241874585
-genu of corpus callosum,corpus callosum,FA_tbss,-0.4002346056706643,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,MD_tbss,0.4222392745114143,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,MO_tbss,-0.15630167223513475,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,L1_tbss,0.26285703153564227,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,L2_tbss,0.4192045596651154,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,L3_tbss,0.42441178129950463,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,ICVF_tbss,-0.3155404976040106,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,OD_tbss,0.019264379034509505,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,ISOVF_tbss,0.3349738479864959,PC1,0.5951366208048611
-genu of corpus callosum,corpus callosum,FA_tbss,-0.18171650556167718,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,MD_tbss,-0.12599049868531192,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,MO_tbss,-0.5676320229595909,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,L1_tbss,-0.44832739454021925,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,L2_tbss,0.12087033017111987,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,L3_tbss,-0.0010851229586243197,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,ICVF_tbss,0.1338923026171747,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,OD_tbss,0.6280030910053678,PC2,0.24492609723169043
-genu of corpus callosum,corpus callosum,ISOVF_tbss,-0.031242510192445862,PC2,0.24492609723169043
-splenium of corpus callosum,corpus callosum,FA_tbss,-0.3458905576089172,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,MD_tbss,0.45388706130125434,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,MO_tbss,0.09029938458760847,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,L1_tbss,0.28808766022966287,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,L2_tbss,0.36655551134016906,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,L3_tbss,0.4495594944366249,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,ICVF_tbss,-0.3374932275538607,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,OD_tbss,-0.11026392353191117,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,ISOVF_tbss,0.347377727405575,PC1,0.5113007364305239
-splenium of corpus callosum,corpus callosum,FA_tbss,0.36867879221369587,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,MD_tbss,0.0967504747909243,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,MO_tbss,0.5311235535821179,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,L1_tbss,0.41044024471393065,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,L2_tbss,-0.3409694919822641,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,L3_tbss,-0.07072358017114734,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,ICVF_tbss,-0.04174247029467284,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,OD_tbss,-0.5302219679185776,PC2,0.3231865236639055
-splenium of corpus callosum,corpus callosum,ISOVF_tbss,0.004699128050470899,PC2,0.3231865236639055
-genu of corpus callosum,genu,FA_tbss,-0.4002346056706643,PC1,0.5951366208048611
-genu of corpus callosum,genu,MD_tbss,0.4222392745114143,PC1,0.5951366208048611
-genu of corpus callosum,genu,MO_tbss,-0.15630167223513475,PC1,0.5951366208048611
-genu of corpus callosum,genu,L1_tbss,0.26285703153564227,PC1,0.5951366208048611
-genu of corpus callosum,genu,L2_tbss,0.4192045596651154,PC1,0.5951366208048611
-genu of corpus callosum,genu,L3_tbss,0.42441178129950463,PC1,0.5951366208048611
-genu of corpus callosum,genu,ICVF_tbss,-0.3155404976040106,PC1,0.5951366208048611
-genu of corpus callosum,genu,OD_tbss,0.019264379034509505,PC1,0.5951366208048611
-genu of corpus callosum,genu,ISOVF_tbss,0.3349738479864959,PC1,0.5951366208048611
-genu of corpus callosum,genu,FA_tbss,-0.18171650556167718,PC2,0.24492609723169043
-genu of corpus callosum,genu,MD_tbss,-0.12599049868531192,PC2,0.24492609723169043
-genu of corpus callosum,genu,MO_tbss,-0.5676320229595909,PC2,0.24492609723169043
-genu of corpus callosum,genu,L1_tbss,-0.44832739454021925,PC2,0.24492609723169043
-genu of corpus callosum,genu,L2_tbss,0.12087033017111987,PC2,0.24492609723169043
-genu of corpus callosum,genu,L3_tbss,-0.0010851229586243197,PC2,0.24492609723169043
-genu of corpus callosum,genu,ICVF_tbss,0.1338923026171747,PC2,0.24492609723169043
-genu of corpus callosum,genu,OD_tbss,0.6280030910053678,PC2,0.24492609723169043
-genu of corpus callosum,genu,ISOVF_tbss,-0.031242510192445862,PC2,0.24492609723169043
-splenium of corpus callosum,splenium,FA_tbss,-0.3458905576089172,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,MD_tbss,0.45388706130125434,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,MO_tbss,0.09029938458760847,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,L1_tbss,0.28808766022966287,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,L2_tbss,0.36655551134016906,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,L3_tbss,0.4495594944366249,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,ICVF_tbss,-0.3374932275538607,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,OD_tbss,-0.11026392353191117,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,ISOVF_tbss,0.347377727405575,PC1,0.5113007364305239
-splenium of corpus callosum,splenium,FA_tbss,0.36867879221369587,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,MD_tbss,0.0967504747909243,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,MO_tbss,0.5311235535821179,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,L1_tbss,0.41044024471393065,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,L2_tbss,-0.3409694919822641,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,L3_tbss,-0.07072358017114734,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,ICVF_tbss,-0.04174247029467284,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,OD_tbss,-0.5302219679185776,PC2,0.3231865236639055
-splenium of corpus callosum,splenium,ISOVF_tbss,0.004699128050470899,PC2,0.3231865236639055
-anterior limb of internal capsule (left),internal capsule,FA_tbss,-0.33487554818887544,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,MD_tbss,0.44569445068157465,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,MO_tbss,0.08785969239445597,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,L1_tbss,0.3497707317603153,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,L2_tbss,0.39986759260783183,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,L3_tbss,0.43495876688106627,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.3024836368683265,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,OD_tbss,-0.058896832064365544,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.339274999975044,PC1,0.5450365501692334
-anterior limb of internal capsule (left),internal capsule,FA_tbss,-0.4086442542181293,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,MD_tbss,-0.06468173588975121,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,MO_tbss,-0.5323032317144369,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,L1_tbss,-0.38675561373492645,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,L2_tbss,0.24959022436605158,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,L3_tbss,0.05667519543196509,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,ICVF_tbss,0.0719019407656403,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,OD_tbss,0.5700997875337809,PC2,0.22783993014936524
-anterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.01443941063232042,PC2,0.22783993014936524
-anterior limb of internal capsule (right),internal capsule,FA_tbss,-0.3383858273167991,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,MD_tbss,0.4500253854604367,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,MO_tbss,0.07492038759732023,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,L1_tbss,0.3416805539952498,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,L2_tbss,0.39623407486369505,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,L3_tbss,0.43873040975431876,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.2963732542592533,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,OD_tbss,-0.03102664952287607,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.3497541215038951,PC1,0.5320452286026255
-anterior limb of internal capsule (right),internal capsule,FA_tbss,-0.40114418588101486,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,MD_tbss,-0.07957715404327748,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,MO_tbss,-0.5366672616044345,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,L1_tbss,-0.40272890158725544,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,L2_tbss,0.26696769035888873,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,L3_tbss,0.028763817118383318,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,ICVF_tbss,0.08959877806269123,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,OD_tbss,0.5498573508206805,PC2,0.23887861370339877
-anterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.0088514791931557,PC2,0.23887861370339877
-posterior limb of internal capsule (left),internal capsule,FA_tbss,-0.48905366199796885,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,MD_tbss,0.28940790046801246,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,MO_tbss,-0.2897306731727285,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,L1_tbss,-0.10718029359887471,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,L2_tbss,0.49263953565665725,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,L3_tbss,0.3907039243388332,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.1231379493238255,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,OD_tbss,0.27490484229799056,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.3091265259593201,PC1,0.416760499240886
-posterior limb of internal capsule (left),internal capsule,FA_tbss,0.09015783535007359,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,MD_tbss,0.4352198844671289,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,MO_tbss,0.3953985454131724,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,L1_tbss,0.5019413856787698,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,L2_tbss,-0.036291241913974696,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,L3_tbss,0.2919665011885201,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.293682361615139,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,OD_tbss,-0.41535140546223015,PC2,0.3807270147589918
-posterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.22100325997190826,PC2,0.3807270147589918
-posterior limb of internal capsule (right),internal capsule,FA_tbss,-0.4531404320147435,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,MD_tbss,0.38452406775106873,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,MO_tbss,-0.17633403562918415,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,L1_tbss,0.024856972288506064,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,L2_tbss,0.4750184466989971,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,L3_tbss,0.4534775852450727,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.17200131094013588,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,OD_tbss,0.17400211623773382,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.3520622055215139,PC1,0.42515768781237295
-posterior limb of internal capsule (right),internal capsule,FA_tbss,0.20366554716752233,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,MD_tbss,0.3468687348878147,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,MO_tbss,0.4657028848462684,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,L1_tbss,0.5198567155812479,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,L2_tbss,-0.13483161253750617,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,L3_tbss,0.17975124033378123,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.23405134035489397,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,OD_tbss,-0.4727047726133711,PC2,0.37448957379683206
-posterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.14950698930432674,PC2,0.37448957379683206
+superior cerebellar peduncle (left),superior cerebellar peduncle,FA_tbss,-0.3503828307098334,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,MD_tbss,0.3635687408338725,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,MO_tbss,-0.15825969261345277,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,L1_tbss,0.13792140405714548,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,L2_tbss,0.4199092956195141,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,L3_tbss,0.41777598805695026,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,ICVF_tbss,-0.19904751995573036,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,OD_tbss,0.16242779477245883,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,ISOVF_tbss,0.32336750830430955,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,RD_tbss,0.4237350076902921,PC1,0.5482358585501884
+superior cerebellar peduncle (left),superior cerebellar peduncle,FA_tbss,0.2932778440789031,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,MD_tbss,0.3038288475751625,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,MO_tbss,0.4369107440397495,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,L1_tbss,0.5366993761801553,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,L2_tbss,-0.043081576799227354,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,L3_tbss,0.034513041929337046,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,ICVF_tbss,0.17829014209586133,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,OD_tbss,-0.45383478632695634,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,ISOVF_tbss,0.3192032476868477,PC2,0.28058367787340627
+superior cerebellar peduncle (left),superior cerebellar peduncle,RD_tbss,-0.006902550144128644,PC2,0.28058367787340627
+superior cerebellar peduncle (right),superior cerebellar peduncle,FA_tbss,-0.33885220851966363,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,MD_tbss,0.3703690651435967,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,MO_tbss,-0.15690200678326469,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,L1_tbss,0.15557702207161211,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,L2_tbss,0.422824423076896,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,L3_tbss,0.4199849817530959,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,ICVF_tbss,-0.17533507025868253,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,OD_tbss,0.13446971434890284,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,ISOVF_tbss,0.33692231153130214,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,RD_tbss,0.4262328873291835,PC1,0.5410012575836813
+superior cerebellar peduncle (right),superior cerebellar peduncle,FA_tbss,0.3220930970315183,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,MD_tbss,0.2932223027865339,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,MO_tbss,0.4393348458837474,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,L1_tbss,0.5252240947901771,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,L2_tbss,-0.04841206960463913,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,L3_tbss,0.015331949174400231,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,ICVF_tbss,0.1435918076445219,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,OD_tbss,-0.48003803030385905,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,ISOVF_tbss,0.29564677516550836,PC2,0.27832627819691075
+superior cerebellar peduncle (right),superior cerebellar peduncle,RD_tbss,-0.018982382939579486,PC2,0.27832627819691075
+body of corpus callosum,corpus callosum,FA_tbss,-0.36851493773044636,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,MD_tbss,0.3746801059704796,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,MO_tbss,-0.24478138060537272,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,L1_tbss,0.17721782895796712,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,L2_tbss,0.3921544337825334,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,L3_tbss,0.3906543740756186,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,ICVF_tbss,-0.2504720823373553,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,OD_tbss,0.12544840540076502,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,ISOVF_tbss,0.3031706243237042,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,RD_tbss,0.3945954153906052,PC1,0.6334294195720274
+body of corpus callosum,corpus callosum,FA_tbss,-0.18269180053710216,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,MD_tbss,-0.22046769199417968,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,MO_tbss,-0.44131679919435374,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,L1_tbss,-0.5537130819508556,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,L2_tbss,0.05469547199976832,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,L3_tbss,-0.04291227096782512,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,ICVF_tbss,0.11971624076952946,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,OD_tbss,0.6094699481929577,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,ISOVF_tbss,-0.16118008945876863,PC2,0.20404515292142383
+body of corpus callosum,corpus callosum,RD_tbss,0.007831569412404307,PC2,0.20404515292142383
+genu of corpus callosum,corpus callosum,FA_tbss,-0.37168432508913346,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,MD_tbss,0.38591909411116776,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,MO_tbss,-0.14872009166905162,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,L1_tbss,0.23299208519003195,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,L2_tbss,0.38736085871152076,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,L3_tbss,0.3909540760497821,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,ICVF_tbss,-0.29042321719202896,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,OD_tbss,0.024953582811653614,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,ISOVF_tbss,0.3050021039655418,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,RD_tbss,0.39449474472015605,PC1,0.6339443844383826
+genu of corpus callosum,corpus callosum,FA_tbss,-0.16888179958151694,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,MD_tbss,-0.14001544165623978,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,MO_tbss,-0.560762612018219,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,L1_tbss,-0.45759774374560935,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,L2_tbss,0.10705384113884099,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,L3_tbss,-0.01475717919506259,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,ICVF_tbss,0.1429638871707721,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,OD_tbss,0.6260492578052491,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,ISOVF_tbss,-0.04354378299510214,PC2,0.22103560252612123
+genu of corpus callosum,corpus callosum,RD_tbss,0.04553575779504126,PC2,0.22103560252612123
+splenium of corpus callosum,corpus callosum,FA_tbss,-0.3513650543968948,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,MD_tbss,0.4005582313869872,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,MO_tbss,0.031235848880404222,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,L1_tbss,0.21735683184062335,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,L2_tbss,0.3666210320710171,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,L3_tbss,0.4154760786651808,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,ICVF_tbss,-0.3028305538680939,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,OD_tbss,-0.04824616689593799,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,ISOVF_tbss,0.3112941233257616,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,RD_tbss,0.41219729489717466,PC1,0.5503011919697659
+splenium of corpus callosum,corpus callosum,FA_tbss,-0.3018459923576039,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,MD_tbss,-0.17223847011373664,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,MO_tbss,-0.532010447444459,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,L1_tbss,-0.4513184145082204,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,L2_tbss,0.2707608428149648,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,L3_tbss,-0.006614868371094218,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,ICVF_tbss,0.09694243504000995,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,OD_tbss,0.5352050345701131,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,ISOVF_tbss,-0.06576900721300669,PC2,0.29970241215431953
+splenium of corpus callosum,corpus callosum,RD_tbss,0.1377550772580175,PC2,0.29970241215431953
+genu of corpus callosum,genu,FA_tbss,-0.37168432508913346,PC1,0.6339443844383826
+genu of corpus callosum,genu,MD_tbss,0.38591909411116776,PC1,0.6339443844383826
+genu of corpus callosum,genu,MO_tbss,-0.14872009166905162,PC1,0.6339443844383826
+genu of corpus callosum,genu,L1_tbss,0.23299208519003195,PC1,0.6339443844383826
+genu of corpus callosum,genu,L2_tbss,0.38736085871152076,PC1,0.6339443844383826
+genu of corpus callosum,genu,L3_tbss,0.3909540760497821,PC1,0.6339443844383826
+genu of corpus callosum,genu,ICVF_tbss,-0.29042321719202896,PC1,0.6339443844383826
+genu of corpus callosum,genu,OD_tbss,0.024953582811653614,PC1,0.6339443844383826
+genu of corpus callosum,genu,ISOVF_tbss,0.3050021039655418,PC1,0.6339443844383826
+genu of corpus callosum,genu,RD_tbss,0.39449474472015605,PC1,0.6339443844383826
+genu of corpus callosum,genu,FA_tbss,-0.16888179958151694,PC2,0.22103560252612123
+genu of corpus callosum,genu,MD_tbss,-0.14001544165623978,PC2,0.22103560252612123
+genu of corpus callosum,genu,MO_tbss,-0.560762612018219,PC2,0.22103560252612123
+genu of corpus callosum,genu,L1_tbss,-0.45759774374560935,PC2,0.22103560252612123
+genu of corpus callosum,genu,L2_tbss,0.10705384113884099,PC2,0.22103560252612123
+genu of corpus callosum,genu,L3_tbss,-0.01475717919506259,PC2,0.22103560252612123
+genu of corpus callosum,genu,ICVF_tbss,0.1429638871707721,PC2,0.22103560252612123
+genu of corpus callosum,genu,OD_tbss,0.6260492578052491,PC2,0.22103560252612123
+genu of corpus callosum,genu,ISOVF_tbss,-0.04354378299510214,PC2,0.22103560252612123
+genu of corpus callosum,genu,RD_tbss,0.04553575779504126,PC2,0.22103560252612123
+splenium of corpus callosum,splenium,FA_tbss,-0.3513650543968948,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,MD_tbss,0.4005582313869872,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,MO_tbss,0.031235848880404222,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,L1_tbss,0.21735683184062335,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,L2_tbss,0.3666210320710171,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,L3_tbss,0.4154760786651808,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,ICVF_tbss,-0.3028305538680939,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,OD_tbss,-0.04824616689593799,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,ISOVF_tbss,0.3112941233257616,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,RD_tbss,0.41219729489717466,PC1,0.5503011919697659
+splenium of corpus callosum,splenium,FA_tbss,-0.3018459923576039,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,MD_tbss,-0.17223847011373664,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,MO_tbss,-0.532010447444459,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,L1_tbss,-0.4513184145082204,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,L2_tbss,0.2707608428149648,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,L3_tbss,-0.006614868371094218,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,ICVF_tbss,0.09694243504000995,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,OD_tbss,0.5352050345701131,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,ISOVF_tbss,-0.06576900721300669,PC2,0.29970241215431953
+splenium of corpus callosum,splenium,RD_tbss,0.1377550772580175,PC2,0.29970241215431953
+anterior limb of internal capsule (left),internal capsule,FA_tbss,-0.3202006819189893,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,MD_tbss,0.4048879200750153,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,MO_tbss,0.061781222003515324,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,L1_tbss,0.3055115583359288,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,L2_tbss,0.37459971652750085,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,L3_tbss,0.3993673081158977,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.2738073801155333,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,OD_tbss,-0.03504201656895042,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.3090453463917984,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,RD_tbss,0.40602514569327763,PC1,0.5860566997164149
+anterior limb of internal capsule (left),internal capsule,FA_tbss,-0.3744340413993218,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,MD_tbss,-0.10388242011566383,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,MO_tbss,-0.5345315467531403,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,L1_tbss,-0.41441402541828526,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,L2_tbss,0.2117321210851113,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,L3_tbss,0.0171670069901156,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,ICVF_tbss,0.09780376257763511,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,OD_tbss,0.5680927520562178,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,ISOVF_tbss,-0.01751515632100833,PC2,0.20891655304997722
+anterior limb of internal capsule (left),internal capsule,RD_tbss,0.11754872884167486,PC2,0.20891655304997722
+anterior limb of internal capsule (right),internal capsule,FA_tbss,-0.32401841295531675,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,MD_tbss,0.40705181685843184,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,MO_tbss,0.04779337499002166,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,L1_tbss,0.2952615480052984,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,L2_tbss,0.37199752545633574,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,L3_tbss,0.4011035468106557,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.26718622104772,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,OD_tbss,-0.008568362316940158,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.3174580228149143,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,RD_tbss,0.41030427005444586,PC1,0.5744076277893967
+anterior limb of internal capsule (right),internal capsule,FA_tbss,-0.3661189907501331,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,MD_tbss,-0.12020812603605235,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,MO_tbss,-0.5379477351366763,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,L1_tbss,-0.4305711272723521,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,L2_tbss,0.22824046644145501,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,L3_tbss,-0.011785521472627396,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,ICVF_tbss,0.11508871042928027,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,OD_tbss,0.5457834329698378,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,ISOVF_tbss,-0.024981498377680385,PC2,0.21879097152994836
+anterior limb of internal capsule (right),internal capsule,RD_tbss,0.1128980885406706,PC2,0.21879097152994836
+posterior limb of internal capsule (left),internal capsule,FA_tbss,-0.4176670075042663,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,MD_tbss,0.31684290803760673,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,MO_tbss,-0.19589989974782632,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,L1_tbss,-0.023298766403298206,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,L2_tbss,0.4283130504594071,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,L3_tbss,0.38688147986589416,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.15458024584604949,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,OD_tbss,0.17961717010404457,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.2966548195033098,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,RD_tbss,0.4571153338468986,PC1,0.47260977339132126
+posterior limb of internal capsule (left),internal capsule,FA_tbss,0.17550618729615056,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,MD_tbss,0.3766089406842417,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,MO_tbss,0.44055467159750383,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,L1_tbss,0.5126047929557288,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,L2_tbss,-0.1232031665835367,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,L3_tbss,0.21787138767405104,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,ICVF_tbss,-0.2673720335252383,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,OD_tbss,-0.45752523431943,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,ISOVF_tbss,0.16176007494864486,PC2,0.34390275935264436
+posterior limb of internal capsule (left),internal capsule,RD_tbss,0.029677661107363303,PC2,0.34390275935264436
+posterior limb of internal capsule (right),internal capsule,FA_tbss,-0.4035916477560398,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,MD_tbss,0.3453955025989143,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,MO_tbss,-0.1522285352414418,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,L1_tbss,0.024560690039847635,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,L2_tbss,0.4235171698178714,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,L3_tbss,0.407089219966225,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.1597611826177739,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,OD_tbss,0.1494651950110431,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.3086613414373476,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,RD_tbss,0.4536686504231338,PC1,0.48147079610999793
+posterior limb of internal capsule (right),internal capsule,FA_tbss,0.2085310454842634,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,MD_tbss,0.3426981644332279,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,MO_tbss,0.46759015511308677,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,L1_tbss,0.5195447245660466,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,L2_tbss,-0.13994731746281258,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,L3_tbss,0.17486655153067082,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,ICVF_tbss,-0.2322208459217311,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,OD_tbss,-0.47454687170382354,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,ISOVF_tbss,0.1456503373190329,PC2,0.3370408477066211
+posterior limb of internal capsule (right),internal capsule,RD_tbss,0.0025805397384674853,PC2,0.3370408477066211
 retrolenticular part of internal capsule (left),internal capsule,FA_tbss,-0.37410750316638247,PC1,0.4907857732772181
 retrolenticular part of internal capsule (left),internal capsule,MD_tbss,0.45685274455641767,PC1,0.4907857732772181
 retrolenticular part of internal capsule (left),internal capsule,MO_tbss,-0.03542720120000746,PC1,0.4907857732772181
@@ -233,219 +255,243 @@ retrolenticular part of internal capsule (right),internal capsule,L3_tbss,-0.006
 retrolenticular part of internal capsule (right),internal capsule,ICVF_tbss,0.11393758422602865,PC2,0.3148237590684021
 retrolenticular part of internal capsule (right),internal capsule,OD_tbss,0.5581594870421043,PC2,0.3148237590684021
 retrolenticular part of internal capsule (right),internal capsule,ISOVF_tbss,0.00954260104403655,PC2,0.3148237590684021
-corticospinal tract (left),corticospinal,FA_tbss,-0.21911012228671886,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,MD_tbss,0.3494352161535178,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,MO_tbss,0.029759249808055638,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L1_tbss,0.28168737486664996,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L2_tbss,0.3338817958639324,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L3_tbss,0.34718150534131736,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,ICVF_tbss,-0.09972841477553629,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,OD_tbss,0.0408571411698709,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,ISOVF_tbss,0.31259877511816075,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,FA_wm,-0.1453503175004217,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,MD_wm,0.28295255133988256,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,MO_wm,-0.026128929252300523,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L1_wm,0.15742624131708213,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L2_wm,0.3018743226516167,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,L3_wm,0.3101257539559543,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,ICVF_wm,-0.08001848842567773,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,OD_wm,0.11730067664967082,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,ISOVF_wm,0.2723677386714935,PC1,0.36153907430884835
-corticospinal tract (left),corticospinal,FA_tbss,0.29657248360012245,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,MD_tbss,0.025044444698015367,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,MO_tbss,0.3315291563540443,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L1_tbss,0.1882711464515845,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L2_tbss,-0.14287637441246107,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L3_tbss,-0.05500442940681916,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,ICVF_tbss,0.04377156767669686,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,OD_tbss,-0.37588448087162474,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,ISOVF_tbss,0.013485064406214083,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,FA_wm,0.3485971906519509,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,MD_wm,0.2168386897194861,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,MO_wm,0.3921958575701558,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L1_wm,0.3882105139545638,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L2_wm,-0.010204424957882726,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,L3_wm,0.052234543888876266,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,ICVF_wm,0.17203995433757382,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,OD_wm,-0.25782170881392086,PC2,0.22495859334340843
-corticospinal tract (left),corticospinal,ISOVF_wm,0.1651286654865923,PC2,0.22495859334340843
-corticospinal tract (right),corticospinal,FA_tbss,-0.26689850091555806,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,MD_tbss,0.3426752389100419,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,MO_tbss,-0.05031813156397514,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L1_tbss,0.2539482981227622,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L2_tbss,0.34937812776003463,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L3_tbss,0.3508687307827899,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,ICVF_tbss,-0.09853104553210265,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,OD_tbss,0.1245588930327854,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,ISOVF_tbss,0.3121045710107361,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,FA_wm,-0.20729947705336763,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,MD_wm,0.23410417619774251,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,MO_wm,-0.0992520991141894,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L1_wm,0.0754573288844444,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L2_wm,0.2955501530838234,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,L3_wm,0.2939145263288162,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,ICVF_wm,-0.10440981354606078,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,OD_wm,0.17626902735792602,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,ISOVF_wm,0.217899703639171,PC1,0.35971176336378197
-corticospinal tract (right),corticospinal,FA_tbss,0.25343032116860653,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,MD_tbss,0.06840633278541541,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,MO_tbss,0.3229636499566578,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L1_tbss,0.22242319418438783,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L2_tbss,-0.08358075444500344,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L3_tbss,-0.0076784866042540634,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,ICVF_tbss,0.05441493245113288,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,OD_tbss,-0.34768438231937604,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,ISOVF_tbss,0.06504145356146006,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,FA_wm,0.29407891766070526,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,MD_wm,0.2910549608888087,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,MO_wm,0.3679668414278517,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L1_wm,0.4199656348269255,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L2_wm,0.08298102154063591,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,L3_wm,0.13095406772665355,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,ICVF_wm,0.15278764957387506,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,OD_wm,-0.22347352771721493,PC2,0.2340665418863482
-corticospinal tract (right),corticospinal,ISOVF_wm,0.24881742376592614,PC2,0.2340665418863482
-posterior thalamic radiation (left),posterior thalamic,FA_tbss,-0.28498465223181363,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,MD_tbss,0.299761705661058,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,MO_tbss,-0.07964088129577632,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L1_tbss,0.17528809072902063,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L2_tbss,0.3114573593007739,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L3_tbss,0.3084108603813827,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,ICVF_tbss,-0.2695632249395939,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,OD_tbss,0.04329883714082841,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,ISOVF_tbss,0.17507029446422778,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,FA_wm,-0.24844957016213384,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,MD_wm,0.29705740135632647,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,MO_wm,-0.03495400993957748,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L1_wm,0.2450196964562507,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L2_wm,0.2994414567806803,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,L3_wm,0.3076712307072143,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,ICVF_wm,-0.2480649625617127,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,OD_wm,-0.044661032826685446,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,ISOVF_wm,0.18831377872293867,PC1,0.49459501581792026
-posterior thalamic radiation (left),posterior thalamic,FA_tbss,-0.12778654977008444,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,MD_tbss,-0.1745914768399362,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,MO_tbss,-0.4407093704973281,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L1_tbss,-0.3998164353783597,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L2_tbss,0.04917774502073504,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L3_tbss,-0.084522550734997,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,ICVF_tbss,0.14587244415095932,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,OD_tbss,0.46192234918949754,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,ISOVF_tbss,-0.05892578429101583,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,FA_wm,-0.14610820436798203,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,MD_wm,0.032451341401963776,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,MO_wm,-0.39210364343414733,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L1_wm,-0.0986879499566875,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L2_wm,0.13895038333677118,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,L3_wm,0.06645730826831373,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,ICVF_wm,0.08287469494793429,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,OD_wm,0.33301587644398795,PC2,0.19900628057761638
-posterior thalamic radiation (left),posterior thalamic,ISOVF_wm,0.15507368668671426,PC2,0.19900628057761638
-posterior thalamic radiation (right),posterior thalamic,FA_tbss,-0.28151683809534295,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,MD_tbss,0.3069359208811512,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,MO_tbss,-0.06497479882081934,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L1_tbss,0.17293527409408907,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L2_tbss,0.31324607278272837,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L3_tbss,0.3135458039134495,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,ICVF_tbss,-0.27084180943430525,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,OD_tbss,0.033608925653953146,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,ISOVF_tbss,0.14560412063185244,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,FA_wm,-0.23420921626236021,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,MD_wm,0.3030114695456568,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,MO_wm,-0.004323014440428229,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L1_wm,0.2503849879037288,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L2_wm,0.303944068554709,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,L3_wm,0.3133392058630497,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,ICVF_wm,-0.25029737085245474,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,OD_wm,-0.07584242078505246,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,ISOVF_wm,0.17873236510366777,PC1,0.4818737868334406
-posterior thalamic radiation (right),posterior thalamic,FA_tbss,-0.18368983059010047,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,MD_tbss,-0.14609333044153225,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,MO_tbss,-0.4474226040949485,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L1_tbss,-0.3967749528116121,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L2_tbss,0.09995262870365638,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L3_tbss,-0.0515638273549273,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,ICVF_tbss,0.1140663781628167,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,OD_tbss,0.4665116286706244,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,ISOVF_tbss,-0.03462820328222441,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,FA_wm,-0.18924462914476786,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,MD_wm,-0.007354370116496898,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,MO_wm,-0.4127446729933128,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L1_wm,-0.14996521449049718,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L2_wm,0.11405118498742457,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,L3_wm,0.040887061229157126,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,ICVF_wm,0.040971810079823534,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,OD_wm,0.29807495539486895,PC2,0.1979876404129765
-posterior thalamic radiation (right),posterior thalamic,ISOVF_wm,0.09424748359638192,PC2,0.1979876404129765
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,FA_wm,-0.3304795830212893,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MD_wm,0.44189803611766376,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MO_wm,-0.02287904841880388,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L1_wm,0.3647164248852322,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L2_wm,0.43865308184224633,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L3_wm,0.4448038178488695,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ICVF_wm,-0.3468084580409291,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,OD_wm,-0.06655039795837672,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ISOVF_wm,0.21678520434761242,PC1,0.5402975417268215
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,FA_wm,0.384606686172483,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MD_wm,0.08811603927794459,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MO_wm,0.6193159496437267,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L1_wm,0.36952724782592666,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L2_wm,-0.10578143520681602,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L3_wm,-0.0453254830291277,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ICVF_wm,0.06448962637503758,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,OD_wm,-0.5460466668979681,PC2,0.20314705808994893
-inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ISOVF_wm,0.0929550559026516,PC2,0.20314705808994893
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,FA_wm,-0.33461796862938903,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MD_wm,0.439274765873064,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MO_wm,-0.008500397213366671,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L1_wm,0.37472408807575297,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L2_wm,0.4334212325945231,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L3_wm,0.4386775087898649,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ICVF_wm,-0.34931170636791964,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,OD_wm,-0.10587724642758768,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ISOVF_wm,0.20262654096125352,PC1,0.5525174362209332
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,FA_wm,0.377620335336718,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MD_wm,0.06161607396673449,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MO_wm,0.6243588916616946,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L1_wm,0.33168714920000864,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L2_wm,-0.12387515622794697,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L3_wm,-0.06098807447031552,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ICVF_wm,0.04905807727547085,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,OD_wm,-0.5699068870257314,PC2,0.19744616926409708
-inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ISOVF_wm,0.08660714083862592,PC2,0.19744616926409708
-sagittal stratum (left),sagittal stratum,FA_tbss,-0.3800661290505709,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,MD_tbss,0.45127919494516344,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,MO_tbss,-0.05073795149404205,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,L1_tbss,0.2557230167966082,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,L2_tbss,0.44123244465650513,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,L3_tbss,0.45857592010468595,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,ICVF_tbss,-0.3982455243315939,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,OD_tbss,0.008020396406383877,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,ISOVF_tbss,0.1424305289982186,PC1,0.498070030039603
-sagittal stratum (left),sagittal stratum,FA_tbss,-0.3170092187915531,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,MD_tbss,-0.15556506196546088,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,MO_tbss,-0.5396559984160048,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,L1_tbss,-0.4792943724743246,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,L2_tbss,0.16857400172968462,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,L3_tbss,-0.007818625009086854,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,ICVF_tbss,0.045797813597080926,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,OD_tbss,0.5625689402737438,PC2,0.2946912741765836
-sagittal stratum (left),sagittal stratum,ISOVF_tbss,-0.08540138955386344,PC2,0.2946912741765836
-sagittal stratum (right),sagittal stratum,FA_tbss,-0.37709731033836463,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,MD_tbss,0.45303613011582755,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,MO_tbss,-0.040490606052919216,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,L1_tbss,0.28708802478601186,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,L2_tbss,0.43228689374522716,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,L3_tbss,0.4549142422212049,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,ICVF_tbss,-0.4049940276655067,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,OD_tbss,-0.031931203819823506,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,ISOVF_tbss,0.09817418036060761,PC1,0.5047804176705784
-sagittal stratum (right),sagittal stratum,FA_tbss,-0.32364941493169785,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,MD_tbss,-0.12791203416279326,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,MO_tbss,-0.5498173841837228,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,L1_tbss,-0.45127166895919313,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,L2_tbss,0.19155625608074014,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,L3_tbss,-0.00136132053423283,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,ICVF_tbss,0.02830898434653662,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,OD_tbss,0.5714062854299584,PC2,0.2851136095946258
-sagittal stratum (right),sagittal stratum,ISOVF_tbss,-0.09456266976982,PC2,0.2851136095946258
+corticospinal tract (left),corticospinal,FA_tbss,-0.2070924988231017,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,MD_tbss,0.310755521265349,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,MO_tbss,0.014126009855225887,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L1_tbss,0.24345250611086736,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L2_tbss,0.30384473531782347,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L3_tbss,0.31218986054802167,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,ICVF_tbss,-0.09275779876026556,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,OD_tbss,0.04814784744809274,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,ISOVF_tbss,0.2768051026541737,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,RD_tbss,0.31730453941867587,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,FA_wm,-0.14038879335350202,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,MD_wm,0.25499706608067774,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,MO_wm,-0.03389637064318599,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L1_wm,0.13461446984378866,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L2_wm,0.27896495752246686,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,L3_wm,0.28411408646021474,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,ICVF_wm,-0.0768117300211574,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,OD_wm,0.11562181783620112,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,ISOVF_wm,0.24135530752107087,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,RD_wm,0.28809688407220746,PC1,0.3979833615240165
+corticospinal tract (left),corticospinal,FA_tbss,0.2890953458864207,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,MD_tbss,0.027191911379940426,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,MO_tbss,0.3267471997677732,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L1_tbss,0.18681744541148992,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L2_tbss,-0.1376722310552893,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L3_tbss,-0.05134852901223897,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,ICVF_tbss,0.0364507972517819,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,OD_tbss,-0.3727532839640023,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,ISOVF_tbss,0.013256265677701528,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,RD_tbss,-0.09873182846919365,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,FA_wm,0.32968731337374324,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,MD_wm,0.24434225473277452,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,MO_wm,0.3822138245268822,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L1_wm,0.3984101855893197,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L2_wm,0.02433181701622993,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,L3_wm,0.08526652945187971,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,ICVF_wm,0.16345684456364806,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,OD_wm,-0.2385105969393395,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,ISOVF_wm,0.1859419342822565,PC2,0.20477150900505933
+corticospinal tract (left),corticospinal,RD_wm,0.05454438667566384,PC2,0.20477150900505933
+corticospinal tract (right),corticospinal,FA_tbss,-0.2382040352710867,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,MD_tbss,0.3071693274276094,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,MO_tbss,-0.04346905696392259,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L1_tbss,0.2278903939880794,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L2_tbss,0.31286851442221125,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L3_tbss,0.3144881362694324,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,ICVF_tbss,-0.09000621873733489,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,OD_tbss,0.10779897877757103,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,ISOVF_tbss,0.27843463946265845,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,RD_tbss,0.3222701069896365,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,FA_wm,-0.18247029723861782,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,MD_wm,0.22162358290032044,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,MO_wm,-0.08346185906980697,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L1_wm,0.0780898431454449,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L2_wm,0.27425841669097145,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,L3_wm,0.27316369040178134,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,ICVF_wm,-0.09248210440728735,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,OD_wm,0.1577404836197219,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,ISOVF_wm,0.20103774138402206,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,RD_wm,0.27932698584394944,PC1,0.3953189950703578
+corticospinal tract (right),corticospinal,FA_tbss,0.26098037215923225,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,MD_tbss,0.034352509102740014,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,MO_tbss,0.3112879199011425,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L1_tbss,0.18734462356034987,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L2_tbss,-0.10979135182675867,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L3_tbss,-0.037786997711793585,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,ICVF_tbss,0.0519337982658676,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,OD_tbss,-0.34514804364240265,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,ISOVF_tbss,0.03066267788255115,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,RD_tbss,-0.07740872658282345,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,FA_wm,0.2829295587075676,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,MD_wm,0.30423706510902176,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,MO_wm,0.35725685231284976,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L1_wm,0.42149349648271184,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L2_wm,0.10280127333629623,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,L3_wm,0.1485717338505336,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,ICVF_wm,0.14683527853023828,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,OD_wm,-0.21123938262234548,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,ISOVF_wm,0.2521789962060182,PC2,0.21439834520852535
+corticospinal tract (right),corticospinal,RD_wm,0.12710325009839257,PC2,0.21439834520852535
+posterior thalamic radiation (left),posterior thalamic,FA_tbss,-0.26245922120053145,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,MD_tbss,0.2721843833768508,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,MO_tbss,-0.0774012021462615,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L1_tbss,0.15508625898374595,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L2_tbss,0.28571047053592824,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L3_tbss,0.2815935917158226,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,ICVF_tbss,-0.24468413510826822,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,OD_tbss,0.04533106533516697,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,ISOVF_tbss,0.15841110478038098,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,RD_tbss,0.28900266533026486,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,FA_wm,-0.22804010299358687,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,MD_wm,0.2729186097733351,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,MO_wm,-0.03581418909590926,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L1_wm,0.22368340205684042,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L2_wm,0.27638457822834595,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,L3_wm,0.28297120315491353,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,ICVF_wm,-0.22410689975868123,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,OD_wm,-0.03431694428574793,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,ISOVF_wm,0.1736246621527376,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,RD_wm,0.2823275735742589,PC1,0.5316176461356241
+posterior thalamic radiation (left),posterior thalamic,FA_tbss,-0.10826787288770112,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,MD_tbss,-0.18899265428144124,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,MO_tbss,-0.43324870842279506,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L1_tbss,-0.40357605642274585,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L2_tbss,0.031129879355853502,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L3_tbss,-0.10136287225480012,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,ICVF_tbss,0.1608667958040211,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,OD_tbss,0.4537327802084973,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,ISOVF_tbss,-0.06473045190894948,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,RD_tbss,-0.035452560831409956,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,FA_wm,-0.13013956123323905,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,MD_wm,0.033166062837008216,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,MO_wm,-0.3823591305122619,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L1_wm,-0.09185171098805309,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L2_wm,0.13608424827076399,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,L3_wm,0.06375521586836666,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,ICVF_wm,0.09785036073282437,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,OD_wm,0.33478457764080277,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,ISOVF_wm,0.16195574596413784,PC2,0.18116396835922752
+posterior thalamic radiation (left),posterior thalamic,RD_wm,0.10197810612117925,PC2,0.18116396835922752
+posterior thalamic radiation (right),posterior thalamic,FA_tbss,-0.2594682863938555,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,MD_tbss,0.27773939815771775,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,MO_tbss,-0.0649585413312369,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L1_tbss,0.15126340952631756,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L2_tbss,0.28728013955985715,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L3_tbss,0.2856529744393582,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,ICVF_tbss,-0.24467362864036118,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,OD_tbss,0.037877144908733174,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,ISOVF_tbss,0.1312939216259312,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,RD_tbss,0.2933109401537052,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,FA_wm,-0.21513283051916507,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,MD_wm,0.277387138802084,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,MO_wm,-0.009443172270081629,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L1_wm,0.2270751560540234,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L2_wm,0.28015554631556316,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,L3_wm,0.2874441431502463,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,ICVF_wm,-0.22498990154372076,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,OD_wm,-0.06093702720099265,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,ISOVF_wm,0.164363118269288,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,RD_wm,0.28705696745316817,PC1,0.5210827652728969
+posterior thalamic radiation (right),posterior thalamic,FA_tbss,-0.16750156640163227,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,MD_tbss,-0.16105078429479638,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,MO_tbss,-0.44284564283356853,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L1_tbss,-0.40354858829188345,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L2_tbss,0.08361501194475755,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L3_tbss,-0.06759734897237096,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,ICVF_tbss,0.1289189369297217,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,OD_tbss,0.4630013227267026,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,ISOVF_tbss,-0.04016124994370102,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,RD_tbss,0.008877308352048377,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,FA_wm,-0.17517135884612706,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,MD_wm,-0.01475008545056591,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,MO_wm,-0.4090618372878897,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L1_wm,-0.1535386471170496,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L2_wm,0.1052859867811037,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,L3_wm,0.031553637404504294,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,ICVF_wm,0.05619646961461289,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,OD_wm,0.3034632482648456,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,ISOVF_wm,0.0935787335386945,PC2,0.17921591547202534
+posterior thalamic radiation (right),posterior thalamic,RD_wm,0.07003722266823693,PC2,0.17921591547202534
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,FA_wm,-0.30421177895494195,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MD_wm,0.40352027723093054,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MO_wm,-0.027823793767094464,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L1_wm,0.3293325689297094,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L2_wm,0.4032548750594081,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L3_wm,0.4075604281596136,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ICVF_wm,-0.312841148902496,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,OD_wm,-0.047091130928378966,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ISOVF_wm,0.19631981418690053,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,RD_wm,0.40993151816999146,PC1,0.5839081092445368
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,FA_wm,0.3673706234599855,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MD_wm,0.10516476314915191,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,MO_wm,0.6157725908614732,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L1_wm,0.3822110160799768,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L2_wm,-0.08826487502298189,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,L3_wm,-0.02722205205796218,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ICVF_wm,0.04562607486030062,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,OD_wm,-0.5519848395485148,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,ISOVF_wm,0.09986680190383873,PC2,0.18364943984949303
+inferior longitudinal fasciculus (left),inferior longitudinal fasciculus,RD_wm,-0.058685133885316584,PC2,0.18364943984949303
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,FA_wm,-0.30974840743859716,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MD_wm,0.40193172351060813,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MO_wm,-0.015741848712364157,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L1_wm,0.33874987163782266,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L2_wm,0.3994094775611909,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L3_wm,0.4030835093353878,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ICVF_wm,-0.3161792827665758,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,OD_wm,-0.08264925100548717,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ISOVF_wm,0.18447671007962657,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,RD_wm,0.40579723017946806,PC1,0.5946594573340125
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,FA_wm,0.3569945440868136,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MD_wm,0.0817762265227575,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,MO_wm,0.6202244723082765,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L1_wm,0.3471157492597759,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L2_wm,-0.1030987040982764,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,L3_wm,-0.03979114344046713,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ICVF_wm,0.026662477934611614,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,OD_wm,-0.5778367545540891,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,ISOVF_wm,0.09296317859498496,PC2,0.1789000867175384
+inferior longitudinal fasciculus (right),inferior longitudinal fasciculus,RD_wm,-0.07237935985450222,PC2,0.1789000867175384
+sagittal stratum (left),sagittal stratum,FA_tbss,-0.35461281203101097,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,MD_tbss,0.40344393723874983,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,MO_tbss,-0.0634160971599224,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,L1_tbss,0.21471626281597656,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,L2_tbss,0.4057516447635463,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,L3_tbss,0.4154231511750174,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,ICVF_tbss,-0.3559082993216444,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,OD_tbss,0.027283757153215026,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,ISOVF_tbss,0.1279989072819624,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,RD_tbss,0.4246745049985883,PC1,0.5461411581152201
+sagittal stratum (left),sagittal stratum,FA_tbss,-0.29156844471613824,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,MD_tbss,-0.18367015876319948,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,MO_tbss,-0.5342540604919354,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,L1_tbss,-0.4939529892017683,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,L2_tbss,0.14004213667430274,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,L3_tbss,-0.036850260257609416,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,ICVF_tbss,0.07194996345430194,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,OD_tbss,0.5602489347501451,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,ISOVF_tbss,-0.0933366421854639,PC2,0.266492370801366
+sagittal stratum (left),sagittal stratum,RD_tbss,0.05566885576934641,PC2,0.266492370801366
+sagittal stratum (right),sagittal stratum,FA_tbss,-0.3534375414832987,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,MD_tbss,0.4063490109841733,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,MO_tbss,-0.05666785923286886,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,L1_tbss,0.24344002892394165,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,L2_tbss,0.39971183688106815,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,L3_tbss,0.41279861643159477,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,ICVF_tbss,-0.3626556027819498,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,OD_tbss,-0.006631996439349911,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,ISOVF_tbss,0.08891363439076445,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,RD_tbss,0.4217192636490986,PC1,0.5516449489855647
+sagittal stratum (right),sagittal stratum,FA_tbss,-0.2945089629734443,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,MD_tbss,-0.15988150084532055,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,MO_tbss,-0.5441011512935561,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,L1_tbss,-0.46973940222478155,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,L2_tbss,0.1596195611965165,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,L3_tbss,-0.03416832684343325,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,ICVF_tbss,0.058971852191215104,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,OD_tbss,0.5712892062507516,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,ISOVF_tbss,-0.09935647476623855,PC2,0.2583886203851781
+sagittal stratum (right),sagittal stratum,RD_tbss,0.06807777237091203,PC2,0.2583886203851781
