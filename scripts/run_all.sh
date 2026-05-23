@@ -29,6 +29,20 @@ if [[ ! -f "${CONFIG}" ]]; then
   exit 1
 fi
 
+if [[ "${ALLOW_LOCAL_RUN:-0}" != "1" ]] && {
+     [[ -z "${SLURM_JOB_ID:-}" ]] || [[ ! "${SLURM_JOB_NAME:-}" =~ ^lncrna_ ]]; }; then
+  cat >&2 <<'EOF'
+run_all.sh is configured for the repo's Slurm batch wrappers only.
+Submit one of:
+  sbatch scripts/sbatch/pipeline_regenie.sbatch.sh
+  sbatch scripts/sbatch/pipeline_ols.sbatch.sh
+  sbatch scripts/sbatch/pipeline_bolt.sbatch.sh
+
+For development-only smoke checks, set ALLOW_LOCAL_RUN=1 explicitly.
+EOF
+  exit 2
+fi
+
 cd "${REPO_ROOT}"
 mkdir -p logs results figures results/intermediate results/variant results/lmm results/lmm_inputs
 
@@ -41,10 +55,23 @@ CONDA_ENV="$(awk -F'"' '/conda_env:/ {print $2; exit}' "${CONFIG}" 2>/dev/null |
 if [[ -n "${CONDA_ENV:-}" ]] && command -v conda >/dev/null 2>&1; then
   # shellcheck disable=SC1091
   source "$(conda info --base)/etc/profile.d/conda.sh" || true
-  # Match by basename of the env path (or exact name for system envs)
-  if conda env list | awk '{print $1}' | sed 's:.*/::' | grep -qx "${CONDA_ENV}"; then
-    conda activate "${CONDA_ENV}"
-    echo "[$(date -Iseconds)] activated conda env: ${CONDA_ENV}" >> "${LOG}"
+  # Match by exact name or by basename of an env path. User-local envs on this
+  # cluster often appear only as absolute paths, and `conda activate NAME`
+  # fails for those unless we activate the matched path.
+  CONDA_MATCH="$(conda env list | awk -v env="${CONDA_ENV}" '
+    $1 == env {print $1; exit}
+    $1 ~ "/" env "$" {print $1; exit}
+  ')"
+  if [[ -n "${CONDA_MATCH}" ]]; then
+    set +u
+    conda activate "${CONDA_MATCH}"
+    ACTIVATE_RC=$?
+    set -u
+    if [[ ${ACTIVATE_RC} -eq 0 ]]; then
+      echo "[$(date -Iseconds)] activated conda env: ${CONDA_MATCH}" >> "${LOG}"
+    else
+      echo "[$(date -Iseconds)] conda activate failed for '${CONDA_MATCH}'; using current python" >> "${LOG}"
+    fi
   else
     echo "[$(date -Iseconds)] conda env '${CONDA_ENV}' not found; using current python" >> "${LOG}"
   fi
@@ -135,6 +162,18 @@ esac
 
 # 06: plots + reports
 run_step "src/06_plots_and_report.py"
+
+# Targeted diffusion summary is an OLS-derived reporting artifact. Run it
+# automatically for any engine that produced OLS outputs; skip LMM-only runs so
+# stale OLS files are not silently reused.
+case "${ENGINE}" in
+  ols|regenie+ols|bolt+ols|all)
+    run_step "src/targeted_diffusion_check.py"
+    ;;
+  *)
+    echo "[$(date -Iseconds)] skipping targeted_diffusion_check.py (engine=${ENGINE}, no OLS in this run)" | tee -a "${LOG}"
+    ;;
+esac
 
 # Optional: run synthetic-data tests
 if [[ ${RUN_TESTS} -eq 1 ]]; then

@@ -97,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
     log = setup_logger("targeted_diff", logs_dir / "run_log.txt")
 
     primary_path = results_dir / "association_results_primary.csv"
+    primary_lmm_path = results_dir / "association_results_primary_lmm.csv"
     geno_path = results_dir / "association_results_genotypic.csv"
     out_path = results_dir / "targeted_diffusion_check.csv"
     fig_path = figures_dir / "targeted_diffusion_forest.png"
@@ -106,6 +107,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     primary = pd.read_csv(primary_path)
     geno = pd.read_csv(geno_path) if geno_path.is_file() else None
+    primary_lmm = pd.read_csv(primary_lmm_path) if primary_lmm_path.is_file() else None
 
     # Filter to the targeted metric set
     df = primary[primary["metric"].astype(str).isin(TARGET_METRICS.keys())].copy()
@@ -130,9 +132,26 @@ def main(argv: list[str] | None = None) -> int:
                           col_aa_p: "aa_vs_gg_p_genotypic"}),
             on="column_name", how="left")
 
+    # Join in REGENIE-LMM single-IDP stats when available (engine-independent
+    # confirmation under a mixed model). Same per-tract row, raw p only.
+    if primary_lmm is not None and "column_name" in primary_lmm.columns:
+        lmm_cols = ["column_name", "n", "beta_per_A", "se", "p", "log10p"]
+        lmm_cols = [c for c in lmm_cols if c in primary_lmm.columns]
+        sub = primary_lmm[lmm_cols].rename(columns={
+            "n": "n_lmm",
+            "beta_per_A": "beta_per_A_lmm",
+            "se": "se_lmm",
+            "p": "p_lmm",
+            "log10p": "log10p_lmm",
+        })
+        df = df.merge(sub, on="column_name", how="left")
+        log.info(f"joined LMM column for {df['p_lmm'].notna().sum() if 'p_lmm' in df.columns else 0} "
+                 f"of {len(df)} rows")
+
     keep_cols = [c for c in [
         "metric", "modality", "region", "column_name",
         "n", "beta_per_A", "se", "t", "p",
+        "n_lmm", "beta_per_A_lmm", "se_lmm", "p_lmm", "log10p_lmm",
         "aa_vs_gg_additive_2beta",
         "aa_vs_gg_beta_genotypic", "aa_vs_gg_p_genotypic", "wald_p",
         "field_id",
@@ -156,15 +175,20 @@ def main(argv: list[str] | None = None) -> int:
     log.info("=" * 72)
     log.info("Raw p < 0.05 hits (NO multiple-testing correction)")
     log.info("=" * 72)
+    has_lmm = "p_lmm" in df.columns
     for m, label in TARGET_METRICS.items():
         sub = df[(df["metric"] == m) & (df["p"] < 0.05)]
         if sub.empty:
             log.info(f"  {label}: 0/{(df['metric'] == m).sum()}")
             continue
-        log.info(f"  {label}: {len(sub)}/{(df['metric'] == m).sum()} tracts at p<0.05")
+        log.info(f"  {label}: {len(sub)}/{(df['metric'] == m).sum()} tracts at OLS p<0.05")
         for _, r in sub.sort_values("p").iterrows():
+            lmm_str = ""
+            if has_lmm and pd.notna(r.get("p_lmm")):
+                lmm_str = (f"   [LMM β={r['beta_per_A_lmm']:+.4f}±"
+                           f"{r['se_lmm']:.4f}  p={r['p_lmm']:.2e}]")
             log.info(f"    {r['modality']:24s} {r['region']:50s} "
-                      f"β={r['beta_per_A']:+.4f}±{r['se']:.4f}  p={r['p']:.2e}")
+                      f"OLS β={r['beta_per_A']:+.4f}±{r['se']:.4f}  p={r['p']:.2e}{lmm_str}")
     return 0
 
 

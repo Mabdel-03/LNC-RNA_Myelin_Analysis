@@ -113,6 +113,10 @@ def main(argv: list[str] | None = None) -> int:
     # ---- phenotype side
     included = manifest[manifest["include"].astype(bool)].copy() \
         if "include" in manifest.columns else manifest.copy()
+    if "include_in_lmm" in included.columns:
+        before_lmm_flag = len(included)
+        included = included[included["include_in_lmm"].astype(str).str.lower().isin(("true", "1"))].copy()
+        log.info(f"LMM include_in_lmm filter: kept {len(included)} of {before_lmm_flag} phenotypes")
     # Apply LMM scope: which families go to REGENIE/BOLT. Exploratory (single
     # IDPs) is opt-in via lmm.scope_include_exploratory because it adds 600+
     # phenotypes and dominates the wall-clock.
@@ -159,13 +163,39 @@ def main(argv: list[str] | None = None) -> int:
     log.info(f"wrote {pheno_list_out} and {excluded_out}")
 
     # ---- covariate side
-    # Quantitative: age, age2, head_size, motion_dmri, PC1..PCN (only those present)
+    # Quantitative: lean covariates plus focused imaging-QC/pathology/vascular fields.
     n_pcs = int(cfg.get("covariates", {}).get("genetic_pc_count", 20))
-    quant_candidates = ["age", "age2", "head_size", "motion_dmri"] + \
-                       [f"PC{i}" for i in range(1, n_pcs + 1)]
+    quant_candidates = ["age", "age2", "age_sex", "head_size", "motion_dmri",
+                        "t1_motion", "bmi"] + [f"PC{i}" for i in range(1, n_pcs + 1)]
+    quant_prefixes = ("scanner_pos_", "dmri_qc_", "t1_qc_", "modality_discrepancy_", "wmh_")
     quant_present = [c for c in quant_candidates if c in wide.columns]
-    cat_candidates = ["sex", "array", "site"]
+    quant_present.extend([c for c in wide.columns if c.startswith(quant_prefixes)])
+    quant_present = list(dict.fromkeys(quant_present))
+    # NOTE: `genotype_batch` has ~106 unique levels in this UKB extract, which
+    # exceeds REGENIE's --maxCatLevels (default 10). Batch effects are captured
+    # adequately via the PCs and `array`, so we omit genotype_batch as a
+    # categorical here. Same reasoning for any cat covar with >50 levels —
+    # filtered out below after population check.
+    cat_candidates = ["sex", "array", "site", "smoking_status",
+                      "diabetes", "hypertension_6150", "hypertension_6177",
+                      "hypertension_self_report"]
+    cat_prefixes = ("protocol_",)
     cat_present = [c for c in cat_candidates if c in wide.columns]
+    cat_present.extend([c for c in wide.columns if c.startswith(cat_prefixes)])
+    cat_present = list(dict.fromkeys(cat_present))
+    # Drop cat covars that REGENIE will reject (default --maxCatLevels=10) or
+    # that have only one level (REGENIE silently warns and ignores them).
+    keep_cat = []
+    for c in cat_present:
+        n_levels = wide[c].dropna().nunique()
+        if n_levels < 2:
+            log.info(f"  dropping cat covar '{c}' (only {n_levels} unique level)")
+            continue
+        if n_levels > 10:
+            log.info(f"  dropping cat covar '{c}' ({n_levels} levels — exceeds REGENIE default maxCatLevels)")
+            continue
+        keep_cat.append(c)
+    cat_present = keep_cat
     if not quant_present and not cat_present:
         log.error("no recognized covariates found in extended table — check step 03 output")
         return 2

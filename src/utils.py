@@ -270,28 +270,6 @@ def trim_outliers_z(x: pd.Series, z_thresh: float = 6.0) -> pd.Series:
     return x
 
 
-def bh_fdr(pvals: Sequence[float]) -> np.ndarray:
-    """Benjamini-Hochberg adjusted q-values. NaN-safe."""
-    p = np.asarray(pvals, dtype=float)
-    n_total = len(p)
-    q = np.full(n_total, np.nan)
-    valid = ~np.isnan(p)
-    pv = p[valid]
-    n = len(pv)
-    if n == 0:
-        return q
-    order = np.argsort(pv)
-    ranked = pv[order]
-    adj = ranked * n / (np.arange(1, n + 1))
-    # enforce monotonicity from the right
-    adj = np.minimum.accumulate(adj[::-1])[::-1]
-    adj = np.clip(adj, 0, 1)
-    out_valid = np.empty(n)
-    out_valid[order] = adj
-    q[valid] = out_valid
-    return q
-
-
 # ---------------------------------------------------------------------------
 # Design matrix + model fits
 # ---------------------------------------------------------------------------
@@ -425,6 +403,103 @@ def fit_genotypic_model(y: pd.Series,
     return out
 
 
+def fit_genotype_pairwise_model(y: pd.Series,
+                                genotype: pd.Series,
+                                covariates: pd.DataFrame,
+                                levels: Sequence[str],
+                                vcov_type: str = "nonrobust") -> dict:
+    """Covariate-conditioned genotype-group model with global and pairwise raw-p contrasts.
+
+    Fits y ~ C(genotype) + covariates using the first entry in `levels` as the
+    reference. Returns:
+      - `global`: one 2-df Wald test over genotype dummies.
+      - `pairwise`: covariate-conditioned contrasts for every pair in `levels`.
+    """
+    import itertools
+    import statsmodels.api as sm
+
+    levels = [str(x) for x in levels]
+    if len(levels) < 2:
+        return {"status": "too_few_levels", "global": {}, "pairwise": []}
+    g = pd.Series(genotype).astype(object)
+    g = g.where(g.isin(levels))
+    g = pd.Categorical(g, categories=levels, ordered=False)
+    dummies = pd.get_dummies(g, prefix="geno", drop_first=True, dtype=float)
+    frame = pd.concat([pd.Series(y).rename("__y__"), dummies, covariates], axis=1).dropna()
+    n = len(frame)
+    if n < 30:
+        return {"status": "too_few_obs", "n": n, "global": {}, "pairwise": []}
+    X = frame.drop(columns="__y__")
+    Y = frame["__y__"]
+    try:
+        if vcov_type == "nonrobust":
+            model = sm.OLS(Y.values, X.values, hasconst=True).fit()
+        else:
+            model = sm.OLS(Y.values, X.values, hasconst=True).fit(cov_type=vcov_type)
+    except Exception as exc:  # noqa: BLE001
+        return {"status": f"fit_error:{exc.__class__.__name__}", "n": n,
+                "global": {}, "pairwise": []}
+
+    cols = list(X.columns)
+    dummy_cols = [f"geno_{level}" for level in levels[1:] if f"geno_{level}" in cols]
+    global_res: dict = {"status": "not_tested", "n": int(n)}
+    if dummy_cols:
+        R = np.zeros((len(dummy_cols), len(cols)))
+        for r, c in enumerate(dummy_cols):
+            R[r, cols.index(c)] = 1.0
+        try:
+            wald = model.wald_test(R, use_f=False)
+            global_res = {
+                "status": "ok",
+                "n": int(n),
+                "wald_df": int(len(dummy_cols)),
+                "wald_chi2": float(np.asarray(wald.statistic).ravel()[0]),
+                "raw_p": float(np.asarray(wald.pvalue).ravel()[0]),
+            }
+        except Exception as exc:  # noqa: BLE001
+            global_res = {"status": f"wald_error:{exc.__class__.__name__}", "n": int(n)}
+
+    def coeff_vector(level: str) -> np.ndarray:
+        v = np.zeros(len(cols))
+        name = f"geno_{level}"
+        if name in cols:
+            v[cols.index(name)] = 1.0
+        return v
+
+    pairwise_rows: list[dict] = []
+    for a, b in itertools.combinations(levels, 2):
+        L = coeff_vector(a) - coeff_vector(b)
+        try:
+            test = model.t_test(L)
+            beta = float(np.asarray(test.effect).ravel()[0])
+            se = float(np.asarray(test.sd).ravel()[0])
+            tval = float(np.asarray(test.tvalue).ravel()[0])
+            pval = float(np.asarray(test.pvalue).ravel()[0])
+            ci = test.conf_int(alpha=0.05)
+            ci_low = float(np.asarray(ci).reshape(-1, 2)[0, 0])
+            ci_high = float(np.asarray(ci).reshape(-1, 2)[0, 1])
+            status = "ok"
+        except Exception as exc:  # noqa: BLE001
+            beta = se = tval = pval = ci_low = ci_high = np.nan
+            status = f"contrast_error:{exc.__class__.__name__}"
+        pairwise_rows.append({
+            "contrast": f"{a}_vs_{b}",
+            "level_a": a,
+            "level_b": b,
+            "n": int(n),
+            "beta": beta,
+            "se": se,
+            "t": tval,
+            "raw_p": pval,
+            "ci95_low": ci_low,
+            "ci95_high": ci_high,
+            "vcov_type": vcov_type,
+            "status": status,
+        })
+    return {"status": "ok", "n": int(n), "global": global_res,
+            "pairwise": pairwise_rows, "vcov_type": vcov_type}
+
+
 # ---------------------------------------------------------------------------
 # Hard-call assignment from imputed dosage
 # ---------------------------------------------------------------------------
@@ -478,7 +553,7 @@ def run_cmd(cmd: Sequence[str] | str, logger: Optional[logging.Logger] = None,
 
 
 # ---------------------------------------------------------------------------
-# Hierarchical refactor: composite + ROI PCA + family FDR + diagnostics + LMM
+# Hierarchical refactor: composite + ROI PCA + diagnostics + LMM
 # ---------------------------------------------------------------------------
 
 def zscore_series(x: pd.Series) -> pd.Series:
@@ -613,32 +688,6 @@ def compute_roi_pca(metric_df: pd.DataFrame,
             "n_used": int(len(keep_eids)), "cols_used": col_keep}
 
 
-def bh_fdr_by_family(df: pd.DataFrame,
-                     family_col: str = "family",
-                     p_col: str = "p") -> pd.Series:
-    """Apply Benjamini-Hochberg FDR within each family independently.
-
-    Returns a Series aligned to df.index with per-row q-values.
-    """
-    q = pd.Series(np.nan, index=df.index, dtype=float)
-    for fam, sub in df.groupby(family_col, dropna=False):
-        q.loc[sub.index] = bh_fdr(sub[p_col].values)
-    return q
-
-
-def bonferroni_by_family(df: pd.DataFrame,
-                         family_col: str = "family",
-                         p_col: str = "p") -> pd.Series:
-    """Per-family Bonferroni-adjusted p-values (capped at 1)."""
-    out = pd.Series(np.nan, index=df.index, dtype=float)
-    for fam, sub in df.groupby(family_col, dropna=False):
-        n = int(sub[p_col].notna().sum())
-        if n == 0:
-            continue
-        out.loc[sub.index] = (sub[p_col] * n).clip(upper=1.0)
-    return out
-
-
 def compute_ols_diagnostics(fit_result: dict) -> dict:
     """Per-phenotype diagnostics from a fit returned with return_model=True.
 
@@ -708,9 +757,23 @@ def run_regenie_step1(*,
                       threads: int = 16,
                       tmp_prefix: Optional[str] = None,
                       force_qt: bool = True,
+                      bt: bool = False,
+                      firth: bool = False,
+                      min_mac: int = 20,
                       extra_ld_library_path: str = "",
                       logger: Optional[logging.Logger] = None) -> subprocess.CompletedProcess:
-    """Invoke REGENIE step 1 (LOCO null model). Multi-phenotype in one call."""
+    """Invoke REGENIE step 1 (LOCO null model). Multi-phenotype in one call.
+
+    bt=True switches to binary-trait mode; force_qt is then ignored. Firth
+    correction (--firth --firth-se --approx) is added when firth=True and
+    bt=True, recommended for low case fractions.
+
+    min_mac (default 20) drops model SNPs with minor-allele count below the
+    threshold in the analysis sample — necessary when step 1 runs on a small
+    subset (e.g., imaging cohort ~40K) of the cohort the model SNP list was
+    QC'd against (e.g., HM3 from full ~488K cohort), since otherwise
+    REGENIE errors on monomorphic-in-subset SNPs ("low variance" error).
+    """
     cmd = [
         binary,
         "--step", "1",
@@ -722,6 +785,7 @@ def run_regenie_step1(*,
         "--covarColList", ",".join(covar_col_list),
         "--keep", keep_file,
         "--bsize", str(bsize),
+        "--minMAC", str(int(min_mac)),
         "--lowmem",
         "--threads", str(threads),
         "--out", out_prefix,
@@ -729,7 +793,11 @@ def run_regenie_step1(*,
     ]
     if cat_covar_list:
         cmd += ["--catCovarList", ",".join(cat_covar_list)]
-    if force_qt:
+    if bt:
+        cmd.append("--bt")
+        if firth:
+            cmd += ["--firth", "--firth-se", "--approx"]
+    elif force_qt:
         cmd.append("--force-qt")
     if tmp_prefix:
         cmd += ["--lowmem-prefix", tmp_prefix]
@@ -753,9 +821,15 @@ def run_regenie_step2(*,
                       min_mac: int = 20,
                       min_info: float = 0.8,
                       threads: int = 8,
+                      bt: bool = False,
+                      firth: bool = False,
                       extra_ld_library_path: str = "",
                       logger: Optional[logging.Logger] = None) -> subprocess.CompletedProcess:
-    """Invoke REGENIE step 2 (per-variant association on imputed dosages)."""
+    """Invoke REGENIE step 2 (per-variant association on imputed dosages).
+
+    For binary traits set bt=True (and firth=True for low case fractions);
+    bt must match the trait type used in the step-1 pred file.
+    """
     cmd = [
         binary,
         "--step", "2",
@@ -777,6 +851,10 @@ def run_regenie_step2(*,
         cmd += ["--catCovarList", ",".join(cat_covar_list)]
     if extract_file:
         cmd += ["--extract", extract_file]
+    if bt:
+        cmd.append("--bt")
+        if firth:
+            cmd += ["--firth", "--firth-se", "--approx"]
     env = _build_env_with_ld_path(extra_ld_library_path)
     return run_cmd(cmd, logger=logger, env=env, check=True)
 
@@ -864,15 +942,13 @@ def parse_bolt_stats(path: str | os.PathLike,
 
 
 __all__ = [
-    "bh_fdr",
-    "bh_fdr_by_family",
-    "bonferroni_by_family",
     "compute_composite_score",
     "compute_ols_diagnostics",
     "compute_roi_pca",
     "dosage_to_hardcall",
     "find_columns_by_metadata_terms",
     "fit_genotypic_model",
+    "fit_genotype_pairwise_model",
     "fit_ols_model",
     "inverse_rank_normalize",
     "load_config",

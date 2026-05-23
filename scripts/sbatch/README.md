@@ -4,13 +4,16 @@ These scripts submit the pipeline to the **kellis** partition on Luria.
 Each wrapper activates the right conda env (`Python_Analysis`), prepends
 the required tool paths (`GWAS_env/bin` for plink2, `bolt_lmm/bin` for
 BOLT-LMM), and patches the SLURM thread allocation into `config.yaml`
-before invoking `bash scripts/run_all.sh`.
+before invoking `bash scripts/run_all.sh`. The top-level runner refuses
+non-Slurm execution unless `ALLOW_LOCAL_RUN=1` is set for development-only
+smoke checks.
 
 | Script | Engine | Threads | Mem | Wall | Use when |
 |---|---|---:|---:|---:|---|
-| `pipeline_ols.sbatch.sh` | `ols` | 4 | 32G | 8h | Fast OLS-only PheWAS + composites + ROI PCA. ~30 min actual. |
-| `pipeline_regenie.sbatch.sh` | `regenie+ols` (default) | 16 | 128G | 48h | Mixed-model headline run. Step 1 dominates wall-clock (~15-25 min/pheno). Tune `lmm.max_phenotypes` in config. |
-| `pipeline_bolt.sbatch.sh` | `bolt+ols` | 32 | 150G | 48h | Optional secondary engine. Per-phenotype BOLT runs in serial. |
+| `pipeline_ols.sbatch.sh` | `ols` | 16 | 300G | 8h | OLS-only PheWAS + composites + ROI PCA. OLS workers are split across phenotypes. |
+| `pipeline_regenie.sbatch.sh` | `regenie+ols` (default) | 16 | 300G | 48h | Mixed-model headline run. OLS uses phenotype workers; REGENIE uses the full thread allocation. Tune `lmm.max_phenotypes` in config. |
+| `pipeline_bolt.sbatch.sh` | `bolt+ols` | 32 | 300G | 48h | Optional secondary engine. OLS uses phenotype workers; per-phenotype BOLT runs in serial with the full thread allocation. |
+| `pipeline_ms_risk_lmm.sbatch.sh` | `MS logistic + REGENIE-BT` | 16 | 200G | 12h | MS disease-risk validation using ICD/self-report/first-occurrence G35 case status. |
 
 ## Submitting
 
@@ -20,6 +23,7 @@ From the repo root (`lnc_rna_mri/`):
 sbatch scripts/sbatch/pipeline_ols.sbatch.sh
 sbatch scripts/sbatch/pipeline_regenie.sbatch.sh
 sbatch scripts/sbatch/pipeline_bolt.sbatch.sh
+sbatch scripts/sbatch/pipeline_ms_risk_lmm.sbatch.sh
 ```
 
 Override the engine without editing config:
@@ -83,3 +87,10 @@ Set `lmm.regenie.skip_step1: true` to force-skip even without the cache.
   `/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/geno/`
   and `/home/mabdel03/data/files/Isolation_Genetics/GWAS/Scripts/ukb21942/sqc/`.
   Read paths are baked into `config.yaml` — update if you re-locate them.
+
+## Non-canonical recovery scripts
+
+Local files named `pipeline_regenie_resume*.sbatch.sh` are intentionally
+ignored. They were one-off recovery wrappers used while debugging failed
+REGENIE attempts. The public, reproducible entrypoints are the four wrappers
+listed above.

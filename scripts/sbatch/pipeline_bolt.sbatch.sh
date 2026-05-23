@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #SBATCH -J lncrna_bolt
 #SBATCH -p kellis
-#SBATCH -n 32
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
 #SBATCH --mem=300G
 #SBATCH -t 48:00:00
 #SBATCH -o logs/sbatch/lncrna_bolt_%j.out
@@ -37,7 +38,15 @@ conda activate /home/mabdel03/data/conda_envs/Python_Analysis
 # bolt_lmm conda env has BOLT-LMM binary + plink2
 export PATH="${PATH}:/home/mabdel03/data/conda_envs/bolt_lmm/bin:/home/mabdel03/data/conda_envs/GWAS_env/bin"
 
-N_THREADS="${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-32}}"
+N_THREADS="${SLURM_CPUS_PER_TASK:-${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-32}}}"
+export PLINK2_THREADS="${PLINK2_THREADS:-${N_THREADS}}"
+export OLS_N_JOBS="${OLS_N_JOBS:-${N_THREADS}}"
+export OLS_BLAS_THREADS="${OLS_BLAS_THREADS:-1}"
+export OMP_NUM_THREADS="${OLS_BLAS_THREADS}"
+export OPENBLAS_NUM_THREADS="${OLS_BLAS_THREADS}"
+export MKL_NUM_THREADS="${OLS_BLAS_THREADS}"
+export NUMEXPR_NUM_THREADS="${OLS_BLAS_THREADS}"
+export VECLIB_MAXIMUM_THREADS="${OLS_BLAS_THREADS}"
 
 # Force engine=bolt+ols + patch BOLT threads to SLURM allocation.
 # IMPORTANT: keep the tempfile in the repo root — the pipeline derives
@@ -52,7 +61,10 @@ trap 'rm -f "${TMP_CFG}"' EXIT
 
 echo "[$(date -Iseconds)] starting BOLT-LMM pipeline on $(hostname)"
 echo "  engine: bolt+ols"
-echo "  threads: ${N_THREADS}"
+echo "  BOLT threads: ${N_THREADS}"
+echo "  OLS workers: ${OLS_N_JOBS}"
+echo "  BLAS threads/worker: ${OLS_BLAS_THREADS}"
+echo "  PLINK2 threads: ${PLINK2_THREADS}"
 echo "  job id: ${SLURM_JOB_ID:-N/A}"
 
 bash scripts/run_all.sh --config "${TMP_CFG}"

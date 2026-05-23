@@ -15,6 +15,7 @@ Outputs:
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -64,12 +65,26 @@ def _load_pre_extracted(path: str, effect_allele: str, other_allele: str,
 # Branch 2: plink2 on pgen (PRIMARY)
 # ---------------------------------------------------------------------------
 
+def _slurm_threads(default: int = 1) -> int:
+    raw = (
+        os.environ.get("PLINK2_THREADS")
+        or os.environ.get("SLURM_CPUS_PER_TASK")
+        or os.environ.get("SLURM_CPUS_ON_NODE")
+        or os.environ.get("SLURM_NTASKS")
+        or str(default)
+    )
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        return max(1, default)
+
+
 def _run_plink2_pgen(pgen_prefix: str, rsid: str, chrom: int, pos: int,
                      out_prefix: Path, logger,
                      effect_allele: str = "A", other_allele: str = "G") -> tuple[Path, str]:
     """Try rsID → chr:pos:ref:alt ID → coord range. Returns (raw_path, allele_modeled)."""
     out_prefix.parent.mkdir(parents=True, exist_ok=True)
-    base_cmd = ["plink2", "--pfile", pgen_prefix]
+    base_cmd = ["plink2", "--threads", str(_slurm_threads()), "--pfile", pgen_prefix]
     if Path(pgen_prefix + ".pvar.zst").is_file():
         base_cmd += ["vzs"]
     # candidate variant IDs to try with --snp (UKB-style colon format included)
@@ -161,14 +176,16 @@ def _try_bgen(chr5_bgen: str, sample_file: str, rsid: str,
               hardcall_threshold: float) -> pd.DataFrame:
     out_prefix.parent.mkdir(parents=True, exist_ok=True)
     if tool_available("plink2"):
-        cmd = ["plink2", "--bgen", chr5_bgen, "ref-first",
+        cmd = ["plink2", "--threads", str(_slurm_threads()),
+               "--bgen", chr5_bgen, "ref-first",
                "--sample", sample_file, "--snp", rsid,
                "--export", "A", "--out", str(out_prefix)]
         try:
             run_cmd(cmd, logger=logger, check=True)
         except RuntimeError as exc:
             logger.warning(f"rsID bgen extraction failed ({exc}); retry by coord")
-            cmd = ["plink2", "--bgen", chr5_bgen, "ref-first",
+            cmd = ["plink2", "--threads", str(_slurm_threads()),
+                   "--bgen", chr5_bgen, "ref-first",
                    "--sample", sample_file,
                    "--chr", str(chrom), "--from-bp", str(pos), "--to-bp", str(pos),
                    "--export", "A", "--out", str(out_prefix)]

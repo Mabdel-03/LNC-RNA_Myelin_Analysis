@@ -1,2 +1,2 @@
-column_name,family,panel,modality,metric,region,source,n,beta_per_A,se,chisq,p,log10p,engine,info,eaf,status,effect_allele,other_allele,family_bonferroni,family_fdr_bh
-WMH_volume,controls,secondary,T2_FLAIR,WMH_volume,,basket,38995,0.000351271,0.00598908,0.00344004,0.9532293371851114,0.0208026,regenie,,0.48069,ok,A,G,0.9532293371851114,0.9532293371851114
+column_name,family,panel,modality,metric,region,source,n,beta_per_A,se,chisq,p,log10p,engine,info,eaf,status,effect_allele,other_allele,raw_p,minus_log10_raw_p,n_tests_in_family,raw_p_rank_within_family,raw_p_lt_0_05,raw_p_lt_0_01,raw_p_lt_0_001
+WMH_volume,controls,secondary,T2_FLAIR,WMH_volume,Total volume of white matter hyperintensities (from T1 and T2_FLAIR images),basket,38995,0.000351271,0.00598908,0.00344004,0.9532293371851114,0.0208026,regenie,,0.48069,ok,A,G,0.9532293371851114,0.020802600000000015,1,1.0,False,False,False

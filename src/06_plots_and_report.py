@@ -7,7 +7,7 @@ Reads:
   results/association_results_composites.csv       (OLS composites — optional)
   results/association_results_roi_pca.csv          (OLS ROI PCA — optional)
   results/association_results_*_lmm.csv            (REGENIE/BOLT — optional)
-  results/multiple_testing_summary*.csv            (per-family — optional)
+  results/raw_p_testing_summary*.csv               (per-family raw-p counts — optional)
   results/roi_pca_loadings.csv                     (per-tract loadings — optional)
   results/genotype_qc_summary.csv
   results/sample_counts.csv
@@ -36,6 +36,22 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from utils import load_config, resolve_under_repo, setup_logger  # noqa: E402
+
+
+_ADJUSTED_COL_TOKENS = ("fdr", "bonferroni", "q_at_top_hit", "alpha_bonf", "adjusted")
+
+
+def _without_adjusted_cols(df: pd.DataFrame) -> pd.DataFrame:
+    drop = [c for c in df.columns if any(tok in c.lower() for tok in _ADJUSTED_COL_TOKENS)]
+    return df.drop(columns=drop, errors="ignore")
+
+
+def _raw_p_series(df: pd.DataFrame) -> pd.Series:
+    if "raw_p" in df.columns:
+        return pd.to_numeric(df["raw_p"], errors="coerce")
+    if "p" in df.columns:
+        return pd.to_numeric(df["p"], errors="coerce")
+    return pd.Series(np.nan, index=df.index)
 
 
 def _setup_mpl():
@@ -80,10 +96,8 @@ def _manhattan_by_idp(primary: pd.DataFrame, out_path: Path) -> None:
     for panel, sub in df.groupby("panel"):
         ax.scatter(sub["x"], sub["nlp"], s=14, label=panel,
                    color=palette.get(panel, "#444"), alpha=0.85)
-    if "bonferroni" in df.columns and df["bonferroni"].notna().any():
-        thr = 0.05 / max(1, df["panel"].value_counts().max())
-        ax.axhline(-np.log10(thr), color="red", linestyle="--", lw=0.8,
-                   label=f"Bonferroni 0.05 (per-panel n={df['panel'].value_counts().max()})")
+    ax.axhline(-np.log10(0.05), color="red", linestyle="--", lw=0.8,
+               label="raw p = 0.05")
     ax.set_xlabel("IDP (ordered by panel/modality)")
     ax.set_ylabel("-log10(p)")
     ax.set_title("Per-IDP association p-values for rs2546890 dosage")
@@ -182,20 +196,21 @@ def _make_report(cfg: dict, primary: pd.DataFrame,
     lines.append("")
     lines.append("## Top 20 associations (primary additive model)")
     show_cols = ["column_name", "panel", "modality", "metric", "region",
-                 "n", "beta_per_A", "se", "p", "bonferroni", "fdr_bh",
+                 "n", "beta_per_A", "se", "p", "raw_p",
+                 "minus_log10_raw_p", "raw_p_rank_within_family",
                  "aa_vs_gg_additive_2beta"]
     show_cols = [c for c in show_cols if c in primary.columns]
     top = primary.dropna(subset=["p"]).sort_values("p").head(20)[show_cols]
     if not top.empty:
-        lines.append(top.to_markdown(index=False, floatfmt=".3g"))
+        lines.append(_without_adjusted_cols(top).to_markdown(index=False, floatfmt=".3g"))
     else:
         lines.append("_(no successful models)_")
     lines.append("")
-    sig = primary[(primary.get("fdr_bh", 1) <= 0.1)]
-    lines.append(f"## FDR-q ≤ 0.1: {len(sig)} IDP(s)")
+    sig = primary[_raw_p_series(primary) < 0.05]
+    lines.append(f"## Raw p < 0.05: {len(sig)} IDP(s)")
     if not sig.empty and geno is not None and not geno.empty:
         lines.append("")
-        lines.append("### Sensitivity (additive 2β vs genotypic AA-vs-GG) for FDR hits")
+        lines.append("### Sensitivity (additive 2β vs genotypic AA-vs-GG) for raw-p hits")
         ea = cfg["variant"]["effect_allele"]
         oa = cfg["variant"]["other_allele"]
         col_aa = f"beta_{ea+ea}_vs_{oa+oa}"
@@ -205,7 +220,7 @@ def _make_report(cfg: dict, primary: pd.DataFrame,
                 col_aa, "p", "wald_p"]
         keep = [c for c in keep if c in cmp.columns]
         if keep:
-            lines.append(cmp[keep].to_markdown(index=False, floatfmt=".3g"))
+            lines.append(_without_adjusted_cols(cmp[keep]).to_markdown(index=False, floatfmt=".3g"))
     lines.append("")
     lines.append("## Caveats")
     inputs = cfg["inputs"]
@@ -301,12 +316,10 @@ def _composite_effects_forest(comp: pd.DataFrame, out_path: Path) -> None:
         ci = 1.96 * sub["se"]
         ax.errorbar(sub["beta_per_A"], np.arange(len(sub)),
                     xerr=ci, fmt="o", color="#1f77b4", ecolor="grey", capsize=2)
-        # mark FDR-significant
-        if "family_fdr_bh" in sub.columns:
-            mask = sub["family_fdr_bh"] <= 0.10
-            if mask.any():
-                ax.scatter(sub.loc[mask, "beta_per_A"], np.where(mask)[0],
-                           color="#d62728", s=30, zorder=3, label="family FDR ≤ 0.10")
+        mask = _raw_p_series(sub) < 0.05
+        if mask.any():
+            ax.scatter(sub.loc[mask, "beta_per_A"], np.where(mask)[0],
+                       color="#d62728", s=30, zorder=3, label="raw p < 0.05")
         ax.axvline(0, color="black", lw=0.5)
         ax.set_yticks(np.arange(len(sub)))
         ax.set_yticklabels([f"{r['region']}" for _, r in sub.iterrows()],
@@ -355,32 +368,34 @@ def _top_roi_pca_loadings(loadings: pd.DataFrame, pca_results: pd.DataFrame,
 def _classify_composite_signal(comp: pd.DataFrame) -> str:
     """Auto-classify the composite pattern into one of four labels.
 
-    Logic: count which composites have at least one FDR<0.10 tract hit. If
-    `demyelination_like` dominates with consistent negative-FA / positive-RD
-    direction → canonical_demyelination. Else if `free_water_like` dominates
-    → free_water_dominant. Else if `tract_geometry_like` → tract_geometry_dominant.
-    Else inconclusive.
+    Logic: the "leading" composite is the one with the smallest minimum raw p.
+    If that minimum p is < 0.01 we tag the composite as dominant; otherwise
+    inconclusive. Counts-of-hits don't work well here because a single tract
+    with a strong coherent multi-metric signal (e.g., bilateral SCP) can be
+    diluted by many weak hits in another composite.
     """
     if comp is None or comp.empty:
         return "inconclusive"
-    if "family_fdr_bh" not in comp.columns:
+    p = _raw_p_series(comp)
+    if "metric" not in comp.columns or p.isna().all():
         return "inconclusive"
-    sig = comp[comp["family_fdr_bh"] <= 0.10]
-    if sig.empty:
+    min_p_by_metric = (comp.assign(_p=p)
+                          .groupby("metric")["_p"]
+                          .min()
+                          .sort_values())
+    if min_p_by_metric.empty:
         return "inconclusive"
-    by_comp = sig.groupby("metric").size().to_dict()
-    if not by_comp:
+    top_metric = min_p_by_metric.index[0]
+    top_p = float(min_p_by_metric.iloc[0])
+    # require modest strength so a uniformly-null panel doesn't trigger a label
+    if top_p > 0.01:
         return "inconclusive"
-    top = max(by_comp, key=by_comp.get)
-    if top == "demyelination_like":
-        return "canonical_demyelination"
-    if top == "free_water_like":
-        return "free_water_dominant"
-    if top == "tract_geometry_like":
-        return "tract_geometry_dominant"
-    if top == "axonal_loss_like":
-        return "axonal_loss_dominant"
-    return "inconclusive"
+    return {
+        "demyelination_like": "canonical_demyelination",
+        "free_water_like": "free_water_dominant",
+        "tract_geometry_like": "tract_geometry_dominant",
+        "axonal_loss_like": "axonal_loss_dominant",
+    }.get(top_metric, "inconclusive")
 
 
 def _read_optional_csv(p: Path) -> pd.DataFrame | None:
@@ -405,7 +420,9 @@ def _make_hierarchical_report(cfg: dict, results_dir: Path, figures_dir: Path,
     comp_lmm = _read_optional_csv(results_dir / "association_results_composites_lmm.csv")
     roi_lmm = _read_optional_csv(results_dir / "association_results_roi_pca_lmm.csv")
     ctl_lmm = _read_optional_csv(results_dir / "association_results_controls_lmm.csv")
-    mt_lmm = _read_optional_csv(results_dir / "multiple_testing_summary_lmm.csv")
+    mt_lmm = _read_optional_csv(results_dir / "raw_p_testing_summary_lmm.csv")
+    if mt_lmm is None:
+        mt_lmm = _read_optional_csv(results_dir / "multiple_testing_summary_lmm.csv")
     primary_ols = _read_optional_csv(results_dir / "association_results_primary.csv")
     comp_ols = _read_optional_csv(results_dir / "association_results_composites.csv")
     roi_ols = _read_optional_csv(results_dir / "association_results_roi_pca.csv")
@@ -438,75 +455,210 @@ def _make_hierarchical_report(cfg: dict, results_dir: Path, figures_dir: Path,
             L.append(f"| {r['step']} | {int(r['n']):,} | {int(r['n_dropped_this_step']):,} |")
     L.append("")
 
-    # Multiple testing summary
-    L.append("## Per-family multiple-testing summary (LMM)")
+    # Raw-p summary
+    L.append("## Per-family raw-p summary (LMM)")
     if mt_lmm is not None and not mt_lmm.empty:
-        L.append(mt_lmm.to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(mt_lmm).to_markdown(index=False, floatfmt=".3g"))
     else:
         L.append("_(LMM results not present; run engine=regenie+ols then 05d)_")
     L.append("")
 
     # Family 1
-    L.append("## Family 1 — primary myelin-sensitive MRI")
+    L.append("## Primary skeleton tensor family")
     if primary_lmm is not None and not primary_lmm.empty:
-        prim_family = primary_lmm[primary_lmm.get("family", "") == "primary"]
+        fam_series = primary_lmm.get("family", pd.Series("", index=primary_lmm.index)).astype(str)
+        prim_family = primary_lmm[fam_series.eq("primary_skeleton_tensor")]
         if prim_family.empty:
-            L.append("_N=0 myelin-sensitive phenotypes available in this extract; no test performed._")
+            L.append("_No primary skeleton tensor LMM rows were present._")
         else:
-            L.append(prim_family.sort_values("p").head(20).to_markdown(index=False, floatfmt=".3g"))
+            L.append(_without_adjusted_cols(prim_family.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
     else:
         L.append("_(LMM results not present)_")
     L.append("")
 
-    # Family 2 — composites
-    L.append("## Family 2a — biological composites (LMM headline)")
+    # Directional context
+    L.append("## Directional tensor context")
+    if primary_lmm is not None and not primary_lmm.empty:
+        fam_series = primary_lmm.get("family", pd.Series("", index=primary_lmm.index)).astype(str)
+        sub = primary_lmm[fam_series.eq("directional_tensor_context")]
+        if sub.empty:
+            L.append("_No directional-context LMM rows were present._")
+        else:
+            L.append(_without_adjusted_cols(sub.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
+    else:
+        L.append("_(LMM results not present)_")
+    L.append("")
+
+    # Mechanistic context
+    L.append("## Secondary mechanistic family")
+    if primary_lmm is not None and not primary_lmm.empty:
+        fam_series = primary_lmm.get("family", pd.Series("", index=primary_lmm.index)).astype(str)
+        sub = primary_lmm[fam_series.eq("secondary_mechanistic")]
+        if sub.empty:
+            L.append("_No mechanistic LMM rows were present._")
+        else:
+            L.append(_without_adjusted_cols(sub.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
+    else:
+        L.append("_(LMM results not present)_")
+    L.append("")
+
+    # Replication weighted tracts
+    L.append("## Replication weighted-tract families")
+    if primary_lmm is not None and not primary_lmm.empty:
+        fam_series = primary_lmm.get("family", pd.Series("", index=primary_lmm.index)).astype(str)
+        sub = primary_lmm[fam_series.isin(["replication_weighted_tensor", "replication_mechanistic"])]
+        if sub.empty:
+            L.append("_No weighted-tract replication LMM rows were present._")
+        else:
+            L.append(_without_adjusted_cols(sub.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
+    else:
+        L.append("_(LMM results not present)_")
+    L.append("")
+
+    # Legacy composites
+    L.append("## Biological composites (OLS/LMM if available)")
     interp = "inconclusive"
+    interp_source = "(no data)"
     if comp_lmm is not None and not comp_lmm.empty:
-        L.append(comp_lmm.sort_values("p").head(20).to_markdown(index=False, floatfmt=".3g"))
-        interp = _classify_composite_signal(comp_lmm)
+        L.append(_without_adjusted_cols(comp_lmm.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
+        # Classify off LMM only if it's a non-trivial panel (>=20 phenotypes);
+        # below that, the demo subset can't fairly score the full composite signature.
+        if len(comp_lmm) >= 20:
+            interp = _classify_composite_signal(comp_lmm)
+            interp_source = f"LMM (n={len(comp_lmm)})"
     else:
         L.append("_(no composite LMM results)_")
     if comp_ols is not None and not comp_ols.empty:
         L.append("")
         L.append("### OLS sensitivity for composites")
-        L.append(comp_ols.sort_values("p").head(10).to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(comp_ols.sort_values("p").head(10)).to_markdown(index=False, floatfmt=".3g"))
+        # Fall back to OLS classification if LMM was missing or too small
+        if interp == "inconclusive":
+            interp = _classify_composite_signal(comp_ols)
+            interp_source = f"OLS (n={len(comp_ols)})"
     L.append("")
 
-    # Family 2 — ROI PCs
-    L.append("## Family 2b — ROI PCA (LMM headline)")
+    # ROI PCs
+    L.append("## ROI PCA (OLS/LMM if available)")
     if roi_lmm is not None and not roi_lmm.empty:
-        L.append(roi_lmm.sort_values("p").head(20).to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(roi_lmm.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
     else:
         L.append("_(no ROI PCA LMM results)_")
     if roi_ols is not None and not roi_ols.empty:
         L.append("")
         L.append("### OLS sensitivity for ROI PCA")
-        L.append(roi_ols.sort_values("p").head(10).to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(roi_ols.sort_values("p").head(10)).to_markdown(index=False, floatfmt=".3g"))
     L.append("")
 
-    # Family 3 — exploratory single-IDP PheWAS
-    L.append("## Family 3 — exploratory single-IDP PheWAS (LMM headline)")
+    # Exploratory single-IDP PheWAS
+    L.append("## Exploratory single-IDP context (LMM headline)")
     L.append("")
-    L.append("_Interpret single-IDP hits below only in light of the composite + ROI-PC results above._")
+    L.append("_Interpret single-IDP hits below as raw-p exploratory context._")
     L.append("")
     if primary_lmm is not None and not primary_lmm.empty:
-        # Top 20 by p
-        L.append(primary_lmm.sort_values("p").head(20).to_markdown(index=False, floatfmt=".3g"))
+        fam_series = primary_lmm.get("family", pd.Series("", index=primary_lmm.index)).astype(str)
+        exploratory = primary_lmm[fam_series.str.contains("exploratory|unfocused", case=False, regex=True)]
+        if exploratory.empty:
+            L.append("_(no exploratory LMM single-IDP rows)_")
+        else:
+            L.append(_without_adjusted_cols(exploratory.sort_values("p").head(20)).to_markdown(index=False, floatfmt=".3g"))
     else:
         L.append("_(no LMM single-IDP results)_")
     if primary_ols is not None and not primary_ols.empty:
         L.append("")
         L.append("### OLS sensitivity for single IDPs (top 10 by OLS p)")
-        L.append(primary_ols.sort_values("p").head(10).to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(primary_ols.sort_values("p").head(10)).to_markdown(index=False, floatfmt=".3g"))
     L.append("")
 
-    # Family 4 — controls
-    L.append("## Family 4 — controls (WMH / QC outcomes)")
+    # Controls
+    L.append("## Controls (WMH / pathology outcomes)")
     if ctl_lmm is not None and not ctl_lmm.empty:
-        L.append(ctl_lmm.sort_values("p").to_markdown(index=False, floatfmt=".3g"))
+        L.append(_without_adjusted_cols(ctl_lmm.sort_values("p")).to_markdown(index=False, floatfmt=".3g"))
     else:
         L.append("_(no LMM control-family results)_")
     L.append("")
+
+    # Pairwise genotype contrasts (Family 2c)
+    L.append("## Pairwise genotype contrasts (AA / AG / GG)")
+    L.append("")
+    L.append("_Covariate-adjusted t-test-style contrasts on residuals; reference allele G. "
+             "Use AA-GG vs AG-GG to compare with strict additivity._")
+    L.append("")
+    pairwise = _read_optional_csv(results_dir / "association_results_pairwise_genotype.csv")
+    if pairwise is not None and not pairwise.empty:
+        p_col = "raw_p" if "raw_p" in pairwise.columns else "p"
+        # AA-vs-GG headline (largest expected effect under additive — should be ~2x AG-vs-GG)
+        aa_gg_mask = pairwise.get("contrast", pd.Series("", index=pairwise.index)).astype(str).eq("AA_vs_GG")
+        if aa_gg_mask.any():
+            L.append("### AA vs GG — top 15 phenotypes by raw p")
+            aa_gg_head = pairwise[aa_gg_mask].sort_values(p_col).head(15)
+            cols_show = [c for c in ("column_name", "family", "modality", "metric", "region",
+                                      "level_a", "level_b", "n", "beta", "se", "ci95_low",
+                                      "ci95_high", p_col, "status") if c in aa_gg_head.columns]
+            L.append(aa_gg_head[cols_show].to_markdown(index=False, floatfmt=".3g"))
+            L.append("")
+        # Spotlight SCP rows across all three contrasts
+        scp_mask = pairwise.get("region", pd.Series("", index=pairwise.index)).astype(str).str.contains(
+            "superior cerebellar peduncle", case=False, na=False)
+        if scp_mask.any():
+            L.append("### Bilateral superior cerebellar peduncle — spotlight (all three contrasts)")
+            scp = pairwise[scp_mask].sort_values(["region", "contrast"])
+            cols_show = [c for c in ("region", "metric", "contrast", "n", "beta", "se",
+                                      "ci95_low", "ci95_high", p_col, "status") if c in scp.columns]
+            L.append(scp[cols_show].to_markdown(index=False, floatfmt=".3g"))
+            L.append("")
+    else:
+        L.append("_(no pairwise-contrast results on disk; 05a writes association_results_pairwise_genotype.csv)_")
+        L.append("")
+
+    # Disease-risk validation (Family 5 — MS / G35)
+    L.append("## Disease-risk validation — multiple sclerosis (ICD-10 G35)")
+    L.append("")
+    L.append("_Logistic regression of MS case status on rs2546890 dosage in the WB-unrelated cohort. "
+             "Pairwise contrasts are restricted to the two listed genotypes; reference is the second._")
+    L.append("")
+    ms_ols = _read_optional_csv(results_dir / "association_ms_risk.csv")
+    ms_lmm = _read_optional_csv(results_dir / "association_ms_risk_lmm.csv")
+    ms_audit = _read_optional_csv(results_dir / "ms_phenotype_audit.csv")
+    if ms_audit is not None and not ms_audit.empty:
+        a = ms_audit.iloc[0]
+        L.append(f"- Cases derived from basket: **{int(a.get('n_ms_cases_union', 0)):,}** "
+                 f"(ICD G35: {int(a.get('n_icd_G35', 0)):,}, "
+                 f"self-report 1261: {int(a.get('n_self_report_1261', 0)):,}, "
+                 f"first-occurrence: {int(a.get('n_first_occurrence', 0)):,})")
+        L.append("")
+    if ms_ols is not None and not ms_ols.empty:
+        cols = [c for c in ("model", "contrast", "n", "n_case", "n_ctrl",
+                            "OR", "OR_lo95", "OR_hi95", "raw_p", "status") if c in ms_ols.columns]
+        L.append("### OLS-equivalent logistic")
+        L.append(ms_ols[cols].to_markdown(index=False, floatfmt=".3g"))
+        L.append("")
+    else:
+        L.append("_(no OLS MS-risk results; run src/07_run_ms_risk.py)_")
+        L.append("")
+    if ms_lmm is not None and not ms_lmm.empty:
+        cols = [c for c in ("model", "contrast", "n", "OR", "OR_lo95", "OR_hi95",
+                            "raw_p", "log10p", "eaf", "info", "status") if c in ms_lmm.columns]
+        L.append("### REGENIE-BT (Firth) headline")
+        L.append(ms_lmm[cols].to_markdown(index=False, floatfmt=".3g"))
+        L.append("")
+    else:
+        L.append("_(no REGENIE-BT MS-risk result yet; run src/07b_run_ms_risk_lmm.py)_")
+        L.append("")
+    # Convergence interpretation
+    if ms_ols is not None and not ms_ols.empty:
+        try:
+            add = ms_ols[ms_ols["model"] == "additive_dosage"].iloc[0]
+            ms_sign = "increases" if float(add["OR"]) > 1.0 else "decreases"
+            ms_sig = "(raw p < 0.05)" if float(add["raw_p"]) < 0.05 else "(raw p ≥ 0.05)"
+            L.append(f"_Convergence note: rs2546890-A {ms_sign} MS risk "
+                     f"(OR={float(add['OR']):.3g}) {ms_sig}. "
+                     "If the dMRI composite signature above is also dominated by "
+                     "`demyelination_like` in the same direction, the genetic + "
+                     "imaging evidence converges._")
+            L.append("")
+        except Exception:
+            pass
 
     # LMM vs OLS comparison
     L.append("## LMM (REGENIE) vs OLS comparison")
@@ -529,21 +681,21 @@ def _make_hierarchical_report(cfg: dict, results_dir: Path, figures_dir: Path,
     # Auto-classified interpretation
     L.append("## Composite-driven interpretation")
     L.append("")
-    L.append(f"**Auto-classified signature: `{interp}`**")
+    L.append(f"**Auto-classified signature: `{interp}`**  _(source: {interp_source})_")
     L.append("")
     L.append("Interpretation key:")
-    L.append("- `canonical_demyelination` — `demyelination_like` composite dominates the FDR-significant set")
+    L.append("- `canonical_demyelination` — `demyelination_like` composite dominates the raw p < 0.05 set")
     L.append("- `free_water_dominant` — `free_water_like` composite dominates")
     L.append("- `tract_geometry_dominant` — `tract_geometry_like` composite dominates")
     L.append("- `axonal_loss_dominant` — `axonal_loss_like` composite dominates")
-    L.append("- `inconclusive` — no composite has any tract hit at family FDR ≤ 0.10")
+    L.append("- `inconclusive` — no composite has any tract hit at raw p < 0.05")
     L.append("")
 
     # Limitations
     L.append("## Limitations")
-    L.append("- No myelin-sensitive MRI present in this UKB extract (family 1 empty).")
+    L.append("- UKB diffusion IDPs are indirect microstructure phenotypes, not direct myelin quantification.")
     L.append("- ROI PCA uses mean imputation for residual missing data → biased if missingness is informative.")
-    L.append("- Family-FDR applied independently per family (not sequential gatekeeping).")
+    L.append("- Raw p values are reported descriptively without FDR, Bonferroni, or other adjusted-p correction.")
     L.append("- REGENIE step-1 LOCO model fit on the imaging subsample (~40K), not the full WB-MM cohort.")
     L.append("- BOLT-LMM (when used) relies on rs2546890 being in HapMap3; for imputed-dosage stats see lmm.bolt.regen_bgen documentation.")
     L.append("")

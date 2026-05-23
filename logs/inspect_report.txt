@@ -3,7 +3,7 @@ rs2546890 → UKBB MRI IDP pipeline — input inspection
 ========================================================================
 
 repo_root: /net/bmc-lab4/data/kellis/users/mabdel03/files/Isolation_Genetics/lnc_rna_mri
-config:    ./runtime_config.ormMFO.yaml
+config:    ./runtime_config.d99q6Z.yaml
 
 [inputs] single files
   phenotype_file                            NOT_SET     (empty)

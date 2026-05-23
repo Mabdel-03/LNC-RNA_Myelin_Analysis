@@ -162,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
             threads=int(lmm_cfg.get("threads_step1", 16)),
             tmp_prefix=tmp_prefix,
             force_qt=True,
+            min_mac=int(rcfg.get("min_mac", 20)),
             extra_ld_library_path=str(rcfg.get("extra_ld_library_path", "")),
             logger=step1_log,
         )

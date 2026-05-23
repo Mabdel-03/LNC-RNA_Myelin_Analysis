@@ -2,7 +2,7 @@
 
 Reproducible local pipeline that tests whether **rs2546890** (chr5:159332892, GRCh38) allele dosage associates with UK Biobank MRI-derived white-matter / myelin phenotypes (FA, MD, L1–L3, RD, NODDI ICVF/ISOVF/ODI, WMH volume).
 
-The default engine is now a **mixed-model (REGENIE)** run in parallel with OLS for sensitivity. The pipeline organizes phenotypes into four families (primary myelin-sensitive / secondary composites + ROI PCs / exploratory single-IDP PheWAS / controls) and applies per-family Bonferroni + BH-FDR.
+The default engine is a **mixed-model (REGENIE)** run in parallel with OLS for sensitivity. The pipeline organizes phenotypes into focused primary, secondary, replication, control, and exploratory families and reports **raw p values only**. It does not compute or report adjusted p values.
 
 > **Interpretation guardrail (enforced in `report_hierarchical.md`):** Ordinary diffusion MRI signals (FA, MD, L1-L3, ICVF, OD, ISOVF) are *indirect* and should not be labeled as myelination effects unless supported by myelin-sensitive MRI (MTR, MTsat, MWF, qT1) or orthogonal validation. The current expected interpretation is that rs2546890-A appears more consistent with a free-water or tract-geometry signal than a canonical demyelination signal unless the composite analysis below shows otherwise.
 
@@ -14,19 +14,33 @@ The default engine is now a **mixed-model (REGENIE)** run in parallel with OLS f
 lnc_rna_mri/
 ├── config.yaml                # all user-editable paths and settings
 ├── requirements.txt
-├── scripts/run_all.sh         # orchestrator (00 → 06)
+├── figures/                   # tracked final figures; see figures/README.md
+├── results/                   # tracked aggregate outputs; see results/README.md
+├── scripts/
+│   ├── README.md              # script-level organization
+│   ├── run_all.sh             # batch-only orchestrator (00 → 06 + targeted report)
+│   └── sbatch/                # canonical Slurm wrappers
+├── tests/                     # synthetic/unit tests; see tests/README.md
 └── src/
+    ├── README.md              # step-by-step source responsibilities
     ├── utils.py               # shared helpers
     ├── 00_inspect_inputs.py   # validate paths, tools, packages
     ├── 01_extract_variant.py  # rs2546890 dosage (plink2 / bgen / pre-extracted)
     ├── 02_build_phenotype_matrix.py
     ├── 03_build_covariates.py
     ├── 04_merge_qc_sample.py  # ancestry / relatedness / QC funnel
-    ├── 05_run_association.py  # OLS + genotypic + multiple testing
-    └── 06_plots_and_report.py # QQ, manhattan-by-IDP, forest, report.md
+    ├── 05a_run_ols.py        # OLS additive + model variants + genotype pairwise tests
+    ├── 05b_run_regenie.py    # REGENIE focused mixed-model run
+    ├── 05d_ingest_lmm_results.py
+    ├── 06_plots_and_report.py # QQ, manhattan-by-IDP, forest, report.md
+    ├── 07_run_ms_risk.py      # MS G35 logistic disease-risk checks
+    ├── 07b_run_ms_risk_lmm.py # REGENIE-BT/Firth MS risk model
+    └── targeted_diffusion_check.py
 ```
 
-Outputs land in `results/`, `figures/`, `logs/`. With `project.overwrite=false` each full run is written into a timestamped subfolder of `results/`.
+Outputs land in `results/`, `figures/`, `logs/`. Aggregate CSV/Markdown/PNG outputs are tracked when they are useful for review; per-eid UKB tables, raw LMM internals, LOCO files, and Slurm stdout/stderr are ignored.
+
+The current narrative report is [`results/variant_story_report.md`](results/variant_story_report.md). It ties the script provenance, phenotype construction, statistical models, figures, and MS-risk validation into the rs2546890-A story.
 
 ---
 
@@ -54,39 +68,36 @@ Set the paths inside `config.yaml`. Defaults are wired to the local Kellis-lab U
 
 ## How to run
 
-### Interactive (login node) — quick OLS sanity checks
+### Interactive checks
 
 ```bash
-# 1) Inspect: validates paths/tools, writes logs/inspect_report.txt
+# Lightweight inspection is still safe interactively.
 python src/00_inspect_inputs.py --config config.yaml
 
-# 2) Full dry run (no plink2/no model fits, just plan + manifests)
-bash scripts/run_all.sh --config config.yaml --dry-run
-
-# 3) Test mode — caps to first N phenotypes (composites + ROI PCs prioritized),
-#    runs the real models end-to-end
-bash scripts/run_all.sh --config config.yaml
-
-# 4) Full run: edit config.yaml → project.dry_run: false, project.test_mode: false
-bash scripts/run_all.sh --config config.yaml
+# Development-only local smoke checks require an explicit override.
+ALLOW_LOCAL_RUN=1 bash scripts/run_all.sh --config config.yaml --dry-run
 ```
 
 ### SLURM on Luria — kellis partition
 
-For production runs, submit the wrapper sbatch scripts (they activate the
-right conda env, set tool paths, and patch SLURM thread counts into config):
+Full pipelines are batch-only. Submit the wrapper sbatch scripts; they
+activate the right conda env, set tool paths, cap BLAS threads, and pass the
+Slurm CPU allocation into OLS/REGENIE/BOLT:
 
 ```bash
-# OLS only (~30 min wall-clock, 4 cpus / 32G)
+# OLS only: phenotype-level OLS workers across the Slurm CPU allocation
 sbatch scripts/sbatch/pipeline_ols.sbatch.sh
 
 # Mixed-model headline (REGENIE step1+step2 + OLS sensitivity)
-# 16 cpus / 128G / up to 48h — scales linearly with lmm.max_phenotypes
+# 16 cpus / 300G / up to 48h — scales linearly with lmm.max_phenotypes
 sbatch scripts/sbatch/pipeline_regenie.sbatch.sh
 
 # Optional BOLT-LMM secondary engine
-# 32 cpus / 150G / up to 48h
+# 32 cpus / 300G / up to 48h
 sbatch scripts/sbatch/pipeline_bolt.sbatch.sh
+
+# MS disease-risk validation (logistic sensitivity + REGENIE-BT/Firth)
+sbatch scripts/sbatch/pipeline_ms_risk_lmm.sbatch.sh
 ```
 
 See [`scripts/sbatch/README.md`](scripts/sbatch/README.md) for wall-clock
@@ -121,12 +132,14 @@ For rs2546890 on this machine, the variant matches as `5:158759900:A:G` (GRCh37)
 ## Statistical design (one-line summary)
 
 - **Primary:** `INRT(IDP) ~ dosage_A + age + age² + sex + age×sex + C(site) + head_size + dMRI_motion + C(array) + PC1..PCk`. `aa_vs_gg_additive = 2 × β`.
-- **Sensitivity (genotypic):** `INRT(IDP) ~ C(genotype, ref=GG) + same covariates`. Reports AG-vs-GG, AA-vs-GG, 2-df Wald p.
+- **Model variants:** additive OLS with nonrobust and HC3 SEs, categorical genotype 2-df model, AA/AG/GG pairwise contrasts, dominant A, recessive A, and focused REGENIE mixed-model results.
+- **Sensitivity (genotypic):** `INRT(IDP) ~ C(genotype, ref=GG) + same covariates`. Reports AG-vs-GG, AA-vs-GG, 2-df Wald raw p.
+- **Disease risk:** `MS_G35 ~ dosage_A + covariates` via logistic regression in the unrelated cohort, plus REGENIE binary-trait/Firth on the larger kinship-tolerant set.
 - **Outliers** trimmed at `|z| > 6` on the raw scale before transform.
 - **WMH** uses `log1p` then INRT.
-- **Multiple testing:** Bonferroni + BH-FDR per panel (primary / secondary).
+- **Multiplicity handling:** raw p values only. Summary tables count `p < 0.05`, `p < 0.01`, and `p < 0.001`; no correction is applied.
 
-**Hierarchical refactor:** the pipeline now ALSO computes biological composite phenotypes (`demyelination_like`, `free_water_like`, `axonal_loss_like`, `tract_geometry_like`) per tract and ROI-level PCA scores per prioritized tract, then applies per-family (primary / secondary / exploratory / controls) Bonferroni + BH-FDR in addition to the back-compat per-panel correction. See `src/04b_derive_composites_and_pca.py` and `report_hierarchical.md`.
+**Focused phenotype tiers:** the confirmatory family is FA/MD/RD in pre-registered TBSS skeleton callosal and projection-tract ROIs. Directional AD/L1, NODDI ICVF/ISOVF, weighted-tract replication, WMH/pathology controls, and exploratory QSM/T2*/GWC/structural outcomes are tagged separately in the phenotype manifest. Composite phenotypes and ROI-level PCA scores are still available as secondary summaries.
 
 **Mixed-model engine:** by default (`models.engine: regenie+ols`) the pipeline runs REGENIE step 1 (LOCO null model, multi-phenotype) + step 2 (rs2546890 only) using the prior SI-loneliness REGENIE infrastructure (`/home/mabdel03/data/software/regenie/regenie`, HapMap3 BED at `…/ukb_genoHM3/ukb_genoHM3_bed`, model SNPs at `…/ukb_genoHM3_modelSNPs.txt`, imputed pgen at `/net/bmc-lab5/…/ukb_imp`). BOLT-LMM is available as a secondary engine (`engine: bolt` or `bolt+ols`) and by default runs only the 15-or-so composite + ROI-PC phenotypes.
 
@@ -148,13 +161,18 @@ Engine choices in `models.engine`:
 | `results/phenotype_manifest.csv` | one row per IDP (panel, family, transform, include flag) |
 | `results/sample_counts.csv` | sample funnel (n at every QC step) |
 | `results/covariate_missingness.csv` | per-covariate missing n/% |
-| `results/association_results_primary.csv` | β, SE, t, p, n, FDR, Bonferroni, `aa_vs_gg_additive_2beta` (OLS, single IDPs) |
-| `results/association_results_genotypic.csv` | AG-vs-GG, AA-vs-GG, 2-df Wald p (OLS) |
+| `results/association_results_primary.csv` | β, SE, t, raw p, n, raw-p ranks/flags, `aa_vs_gg_additive_2beta` (OLS, single IDPs) |
+| `results/association_results_genotypic.csv` | AG-vs-GG, AA-vs-GG, 2-df Wald raw p (OLS) |
+| `results/association_results_model_matrix.csv` | additive, HC3, dominant, recessive, and genotypic raw-p model comparisons |
+| `results/association_results_pairwise_genotype.csv` | AA-vs-GG, AG-vs-GG, AA-vs-AG covariate-conditioned raw-p contrasts |
 | `results/association_results_composites.csv` | OLS on composite phenotypes (NEW) |
 | `results/association_results_roi_pca.csv` | OLS on ROI-PCA phenotypes (NEW) |
 | `results/association_results_*_lmm.csv` | parallel LMM (REGENIE/BOLT) results (NEW) |
-| `results/multiple_testing_summary.csv` | per-family test counts + hit counts (OLS, NEW) |
-| `results/multiple_testing_summary_lmm.csv` | per-family test counts + hit counts (LMM, NEW) |
+| `results/association_ms_risk.csv` | logistic MS-risk sensitivity models: additive, dominant, recessive, AA/AG/GG pairwise |
+| `results/association_ms_risk_lmm.csv` | REGENIE binary-trait/Firth MS-risk headline |
+| `results/raw_p_testing_summary.csv` | per-family raw-p test counts + nominal hit counts (OLS) |
+| `results/raw_p_testing_summary_lmm.csv` | per-family raw-p test counts + nominal hit counts (LMM) |
+| `results/multiple_testing_summary*.csv` | compatibility copies of the raw-p summaries; they do not contain adjusted p values |
 | `results/model_diagnostics_summary.csv` | per-phenotype r², cond no, BP/JB p (NEW) |
 | `results/composite_phenotypes.csv` | per-eid composite scores (NEW) |
 | `results/roi_pca_phenotypes.csv` | per-eid ROI PC scores (NEW) |
@@ -162,6 +180,7 @@ Engine choices in `models.engine`:
 | `results/phenotype_tiers.csv` | phenotype → family / panel / metric / region (NEW) |
 | `results/report.md` | back-compat OLS run summary |
 | `results/report_hierarchical.md` | LMM headline + OLS sensitivity + composite-driven interpretation (NEW) |
+| `results/variant_story_report.md` | prose scientific report explaining phenotype construction, models, results, and biological interpretation |
 | `figures/qqplot_pvalues.png` | QQ of primary p-values |
 | `figures/manhattan_like_idp_results.png` | per-IDP −log10(p) grouped by panel/modality |
 | `figures/effect_size_forest_top_hits.png` | top-20 β±CI |
@@ -169,6 +188,7 @@ Engine choices in `models.engine`:
 | `figures/effect_heatmap_by_tract_metric.png` | NEW: tracts × metrics, color=signed −log10(p) |
 | `figures/composite_effects_forest.png` | NEW: composite × tract β±CI |
 | `figures/top_roi_pca_loadings.png` | NEW: PC1 loadings for top-ranked tracts |
+| `figures/targeted_diffusion_forest.png` | FA/L1/RD targeted tract forest plot; generated by `targeted_diffusion_check.py` |
 | `logs/inspect_report.txt`, `logs/run_log.txt`, `logs/versions.txt`, `logs/model_warnings.txt` | diagnostics |
 | `logs/regenie_step{1,2}.log` | LMM driver logs |
 

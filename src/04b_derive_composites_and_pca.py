@@ -137,7 +137,11 @@ def _build_composites(wide: pd.DataFrame,
                     "metric_guess": comp_name,
                     "tract_or_region_guess": tract,
                     "panel": "secondary",
-                    "family": "secondary",
+                    "family": "secondary_composite",
+                    "analysis_tier": "secondary_composite",
+                    "confirmatory_role": "mechanistic_composite",
+                    "field_id_base": np.nan,
+                    "include_in_lmm": False,
                     "transform": "none",  # composites already standardized
                     "include": True,
                     "notes": f"min_components={min_components}, standardize={standardize}",
@@ -225,7 +229,11 @@ def _build_roi_pca(wide: pd.DataFrame,
                     "metric_guess": pc,
                     "tract_or_region_guess": tract,
                     "panel": "secondary",
-                    "family": "secondary",
+                    "family": "secondary_roi_pca",
+                    "analysis_tier": "secondary_roi_pca",
+                    "confirmatory_role": "dimension_reduction",
+                    "field_id_base": np.nan,
+                    "include_in_lmm": False,
                     "transform": "none",
                     "include": True,
                     "notes": f"n_used={res['n_used']}, evr={res['evr'].tolist()}",
@@ -343,10 +351,17 @@ def main(argv: list[str] | None = None) -> int:
     log.info(f"wrote {extended_path} ({len(merged):,} rows × {len(merged.columns)} cols)")
 
     # ---- phenotype_tiers.csv
-    tiers = ext_manifest[["column_name", "family", "panel", "modality_guess",
-                           "metric_guess", "tract_or_region_guess", "source", "include"]].copy()
-    tiers.columns = ["column_name", "family", "panel", "modality",
-                      "metric", "region", "tier_source", "include"]
+    tier_cols = ["column_name", "family", "analysis_tier", "confirmatory_role",
+                 "field_id", "field_id_base", "panel", "modality_guess",
+                 "metric_guess", "tract_or_region_guess", "source", "include",
+                 "include_in_lmm"]
+    for c in tier_cols:
+        if c not in ext_manifest.columns:
+            ext_manifest[c] = np.nan
+    tiers = ext_manifest[tier_cols].copy()
+    tiers.columns = ["column_name", "family", "analysis_tier", "confirmatory_role",
+                     "field_id", "field_id_base", "panel", "modality",
+                     "metric", "region", "tier_source", "include", "include_in_lmm"]
     tiers.to_csv(tiers_out, index=False)
     log.info(f"wrote {tiers_out}")
 

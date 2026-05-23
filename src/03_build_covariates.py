@@ -74,6 +74,89 @@ def _find_basket_cols(header: list[str], hints: list[str]) -> list[str]:
     return found
 
 
+def _field_id_from_hint(hint: str) -> str:
+    return re.split(r"[-.]", str(hint))[0]
+
+
+def _load_extra_covariates_from_basket(basket: str, cfg: dict, logger) -> pd.DataFrame:
+    """Load focused-analysis imaging QC, WMH, and vascular covariates.
+
+    Missing requested fields are logged but are not fatal because not every UKB
+    basket has every processing/QC release field.
+    """
+    field_hints = cfg["covariates"].get("field_hints", {})
+    header = read_header_only(basket)
+    wanted: dict[str, str] = {}
+    categorical: set[str] = set()
+
+    def add_one(key: str, friendly: str, categorical_flag: bool = False) -> None:
+        hints = field_hints.get(key, [])
+        cols = _find_basket_cols(header, hints)
+        if cols:
+            wanted[cols[0]] = friendly
+            if categorical_flag:
+                categorical.add(friendly)
+            logger.info(f"  extra {friendly:28s} ← {cols[0]}")
+        else:
+            logger.warning(f"  extra {friendly:28s} ← NOT FOUND (tried {hints})")
+
+    def add_many(key: str, prefix: str, categorical_flag: bool = False) -> None:
+        for hint in field_hints.get(key, []):
+            cols = _find_basket_cols(header, [hint])
+            fid = _field_id_from_hint(hint)
+            name = f"{prefix}_{fid}"
+            if cols:
+                wanted[cols[0]] = name
+                if categorical_flag:
+                    categorical.add(name)
+                logger.info(f"  extra {name:28s} ← {cols[0]}")
+            else:
+                logger.warning(f"  extra {name:28s} ← NOT FOUND (tried {hint})")
+
+    add_one("t1_motion", "t1_motion")
+    add_many("scanner_position", "scanner_pos")
+    add_many("dmri_qc", "dmri_qc")
+    add_many("t1_qc", "t1_qc")
+    add_many("modality_discrepancy", "modality_discrepancy")
+    add_many("protocol_flags", "protocol", categorical_flag=True)
+    add_many("wmh_burden", "wmh")
+
+    vascular_names = {
+        "21001": "bmi",
+        "20116": "smoking_status",
+        "2443": "diabetes",
+        "6150": "hypertension_6150",
+        "6177": "hypertension_6177",
+        "20002": "hypertension_self_report",
+    }
+    for hint in field_hints.get("vascular_risk", []):
+        cols = _find_basket_cols(header, [hint])
+        fid = _field_id_from_hint(hint)
+        name = vascular_names.get(fid, f"vascular_{fid}")
+        if cols:
+            wanted[cols[0]] = name
+            if fid in {"20116", "2443", "6150", "6177", "20002"}:
+                categorical.add(name)
+            logger.info(f"  extra {name:28s} ← {cols[0]}")
+        else:
+            logger.warning(f"  extra {name:28s} ← NOT FOUND (tried {hint})")
+
+    if not wanted:
+        return pd.DataFrame({"eid": pd.Series([], dtype="Int64")})
+    cols_to_read = ["f.eid"] + list(wanted.keys())
+    df = safe_read_table(basket, usecols=cols_to_read)
+    df = standardize_eid_column(df, prefer="f.eid")
+    df = df.rename(columns=wanted)
+    for c in df.columns:
+        if c == "eid":
+            continue
+        if c in categorical:
+            df[c] = df[c].astype("category")
+        else:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+    return df
+
+
 def _load_sqc_or_generic(path: str, cfg: dict, logger) -> pd.DataFrame:
     """Detect SQC (`#FID` header, UKB_PC1..PCk cols) vs generic covariate TSV.
 
@@ -285,6 +368,8 @@ def main(argv: list[str] | None = None) -> int:
             log.info("augmenting SQC with imaging covariates from basket")
             img = _load_imaging_covariates_from_basket(basket, cfg, log)
             df = df.merge(img, on="eid", how="left")
+            extra = _load_extra_covariates_from_basket(basket, cfg, log)
+            df = df.merge(extra, on="eid", how="left")
     elif basket and Path(basket).is_file():
         if dry:
             log.info(f"DRY RUN — would scan basket header and load chosen covariate cols")
@@ -293,6 +378,8 @@ def main(argv: list[str] | None = None) -> int:
             log.info(f"  basket cols = {len(header)}")
             return 0
         df = _load_basket_covariates(basket, cfg, log)
+        extra = _load_extra_covariates_from_basket(basket, cfg, log)
+        df = df.merge(extra, on="eid", how="left")
     else:
         log.error("no covariate source: provide inputs.genetic_covariates_file or inputs.basket_tab.")
         return 1

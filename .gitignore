@@ -7,6 +7,10 @@ __pycache__/
 results/intermediate/
 results/variant/
 results/lmm_inputs/
+results/lmm_inputs_ms/
+results/lmm/
+results/lmm/ms_step1*
+results/lmm/ms_step2*
 results/lmm/regenie_step1*
 results/lmm/regenie_step1_tmp*
 results/lmm/*.loco
@@ -18,6 +22,9 @@ results/lmm/bolt_*.stats
 results/composite_phenotypes.csv
 results/roi_pca_phenotypes.csv
 
+# Per-eid MS phenotype (UKB individual-level data — never commit)
+results/ms_phenotype.tsv
+
 # Per-run timestamped output dirs (only relevant if overwrite=false)
 results/2*/
 
@@ -25,6 +32,13 @@ results/2*/
 # useful for reproducibility); skip the giant per-step run log.
 logs/run_log.txt
 logs/*.log
+logs/sbatch/*.out
+logs/sbatch/*.err
+
+# Local recovery wrappers created while debugging failed REGENIE attempts.
+# Canonical entrypoints are pipeline_ols, pipeline_regenie, pipeline_bolt,
+# and pipeline_ms_risk_lmm.
+scripts/sbatch/pipeline_regenie_resume*.sbatch.sh
 
 # OS junk
 .DS_Store

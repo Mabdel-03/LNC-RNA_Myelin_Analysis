@@ -1,0 +1,2 @@
+phenotype,variant,effect_allele,other_allele,engine,model,contrast,exposure,n,beta,se,OR,OR_lo95,OR_hi95,raw_p,eaf,info,chisq,log10p,status
+MS_G35,rs2546890,A,G,regenie_BT_firth,additive_dosage,per-A-allele OR,dosage_A,430354,0.0421764,0.0214422,1.043078461563622,1.0001504712388614,1.0878489869931653,0.049184696967987204,0.480739,,3.86903,1.30817,ok

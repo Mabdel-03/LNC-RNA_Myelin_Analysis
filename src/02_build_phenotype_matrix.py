@@ -66,16 +66,189 @@ KNOWN_IDP_RANGES = [
     (25650, 25676, "ICVF",   "dMRI_weighted_mean", "primary"),
     (25677, 25703, "OD",     "dMRI_weighted_mean", "primary"),
     (25704, 25730, "ISOVF",  "dMRI_weighted_mean", "primary"),
+    # ---- Exploratory SWI / T2* / grey-white contrast contexts ----
+    (24467, 24484, "QSM",    "SWI_deep_gm", "exploratory"),
+    (25026, 25039, "T2star", "SWI_T2star",  "exploratory"),
+    (26989, 27058, "GWC",    "T1_GWC",      "exploratory"),
 ]
 
 # Single-field IDPs (id → (metric, modality, panel_default, label_hint))
 KNOWN_SINGLE_IDPS = {
     25781: ("WMH_volume",       "T2_FLAIR", "secondary",  "Total volume of white matter hyperintensities"),
+    24485: ("WMH_count",        "T2_FLAIR", "secondary",  "White matter hyperintensity count"),
+    24486: ("WMH_mean_volume",  "T2_FLAIR", "secondary",  "Mean white matter hyperintensity volume"),
+    25007: ("WM_volume_normalized","T1",    "exploratory","Volume of white matter normalized for head size"),
+    25008: ("WM_volume_raw",    "T1",       "exploratory","Volume of white matter"),
     25000: ("head_size_scaling","T1",       "covariate",  "Head size scaling factor"),
     25741: ("rfMRI_motion",     "rfMRI",    "exploratory","Mean rfMRI head motion"),
     25742: ("tfMRI_motion",     "tfMRI",    "exploratory","Mean tfMRI head motion"),
     25746: ("dMRI_outlier_slices","dMRI",   "exploratory","Number of dMRI outlier slices detected and corrected"),
 }
+
+
+TBSS_OFFSETS = {
+    "FA": 0, "MD": 48, "MO": 96, "L1": 144, "L2": 192, "L3": 240,
+    "ICVF": 288, "OD": 336, "ISOVF": 384,
+}
+WEIGHTED_OFFSETS = {
+    "FA": 0, "MD": 27, "MO": 54, "L1": 81, "L2": 108, "L3": 135,
+    "ICVF": 162, "OD": 189, "ISOVF": 216,
+}
+
+
+def _as_int_set(values) -> set[int]:
+    return {int(v) for v in (values or []) if pd.notna(v)}
+
+
+def _field_ranges_to_set(ranges) -> set[int]:
+    out: set[int] = set()
+    for item in ranges or []:
+        if not isinstance(item, (list, tuple)) or len(item) != 2:
+            continue
+        lo, hi = int(item[0]), int(item[1])
+        out.update(range(lo, hi + 1))
+    return out
+
+
+def _field_id_base(field_id: int | float | None,
+                   modality: str | None,
+                   metric: str | None) -> int | float:
+    if field_id is None or pd.isna(field_id):
+        return np.nan
+    metric_u = str(metric or "").upper()
+    if modality == "dMRI_TBSS" and metric_u in TBSS_OFFSETS:
+        return int(field_id) - TBSS_OFFSETS[metric_u]
+    if modality == "dMRI_weighted_mean" and metric_u in WEIGHTED_OFFSETS:
+        return int(field_id) - WEIGHTED_OFFSETS[metric_u]
+    return int(field_id)
+
+
+def _focused_metadata(field_id: int | float | None,
+                      modality: str | None,
+                      metric: str | None,
+                      cfg: dict) -> dict:
+    """Return raw-p analysis tier metadata for one manifest row."""
+    fa = cfg.get("focused_analysis", {})
+    metric_u = str(metric or "").upper()
+    base = _field_id_base(field_id, modality, metric_u)
+    primary_bases = _as_int_set(fa.get("tbss_primary_fa_base_ids"))
+    replication_bases = _as_int_set(fa.get("weighted_replication_fa_base_ids"))
+    primary_metrics = set(str(x).upper() for x in fa.get("primary_metrics", ["FA", "MD", "RD"]))
+    directional_metrics = set(str(x).upper() for x in fa.get("directional_metrics", ["L1"]))
+    mech_metrics = set(str(x).upper() for x in fa.get("mechanistic_metrics", ["ICVF", "ISOVF"]))
+    control_ids = _as_int_set(fa.get("controls_field_ids", [25781]))
+    exploratory_ids = _field_ranges_to_set(fa.get("exploratory_field_ranges", []))
+    structural_ids = _as_int_set(fa.get("structural_field_ids", []))
+    include_unfocused = bool(fa.get("include_unfocused_dmri", False))
+
+    out = {
+        "field_id_base": base,
+        "analysis_tier": "unfocused",
+        "confirmatory_role": "excluded",
+        "include_in_lmm": False,
+        "include": False,
+        "family": "unfocused",
+    }
+    fid_int = int(field_id) if field_id is not None and pd.notna(field_id) else None
+    if fid_int in control_ids or metric_u.startswith("WMH"):
+        out.update({
+            "analysis_tier": "controls_pathology",
+            "confirmatory_role": "control",
+            "include_in_lmm": True,
+            "include": True,
+            "family": "controls",
+        })
+        return out
+    if fid_int in structural_ids:
+        out.update({
+            "analysis_tier": "exploratory_structural",
+            "confirmatory_role": "exploratory",
+            "include": True,
+            "family": "exploratory_structural",
+        })
+        return out
+    if fid_int in exploratory_ids:
+        out.update({
+            "analysis_tier": "exploratory_context",
+            "confirmatory_role": "exploratory",
+            "include": True,
+            "family": "exploratory_context",
+        })
+        return out
+    if modality == "dMRI_TBSS" and pd.notna(base) and int(base) in primary_bases:
+        if metric_u in primary_metrics:
+            out.update({
+                "analysis_tier": "primary_skeleton_tensor",
+                "confirmatory_role": "primary",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "primary_skeleton_tensor",
+            })
+        elif metric_u in directional_metrics:
+            out.update({
+                "analysis_tier": "directional_tensor_context",
+                "confirmatory_role": "directional_context",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "directional_tensor_context",
+            })
+        elif metric_u in mech_metrics:
+            out.update({
+                "analysis_tier": "secondary_mechanistic",
+                "confirmatory_role": "mechanistic_support",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "secondary_mechanistic",
+            })
+        else:
+            out.update({
+                "analysis_tier": "exploratory_focused_dmri",
+                "confirmatory_role": "exploratory",
+                "include": include_unfocused,
+                "family": "exploratory_focused_dmri",
+            })
+        return out
+    if modality == "dMRI_weighted_mean" and pd.notna(base) and int(base) in replication_bases:
+        if metric_u in primary_metrics:
+            out.update({
+                "analysis_tier": "replication_weighted_tensor",
+                "confirmatory_role": "replication",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "replication_weighted_tensor",
+            })
+        elif metric_u in mech_metrics:
+            out.update({
+                "analysis_tier": "replication_mechanistic",
+                "confirmatory_role": "replication_support",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "replication_mechanistic",
+            })
+        elif metric_u in directional_metrics:
+            out.update({
+                "analysis_tier": "replication_directional_context",
+                "confirmatory_role": "replication_context",
+                "include_in_lmm": True,
+                "include": True,
+                "family": "replication_directional_context",
+            })
+        else:
+            out.update({
+                "analysis_tier": "exploratory_focused_dmri",
+                "confirmatory_role": "exploratory",
+                "include": include_unfocused,
+                "family": "exploratory_focused_dmri",
+            })
+        return out
+    if str(modality or "").startswith("dMRI_"):
+        out.update({
+            "analysis_tier": "unfocused_dmri",
+            "confirmatory_role": "background",
+            "include": include_unfocused,
+            "family": "unfocused_dmri",
+        })
+    return out
 
 
 # Description-based classifier — preferred when a dictionary is loaded.
@@ -95,7 +268,7 @@ _METRIC_PANEL_DEFAULT = {
 
 def _classify_family(description: str, metric: str, panel: str,
                      primary_terms: list[str], controls_terms: list[str]) -> str:
-    """Map a phenotype row to its hierarchical-FDR family.
+    """Map a phenotype row to its focused analysis family.
 
     Single IDPs default to `exploratory` (the new PheWAS family). Myelin-sensitive
     MRI (MTR/MTsat/MWF/qT1/T2*/R2*) → `primary`. WMH and any matched control
@@ -241,17 +414,27 @@ def _build_manifest_from_basket(basket_path: str,
                 wide_name = f"{modality}_{metric}_f{fid}"
             tract_disp = tract_name if tract_name else _slugify(f"f{fid}")
         else:
-            wide_name = metric  # e.g. WMH_volume
-            tract_disp = tract_name or ""
+            if fid in KNOWN_SINGLE_IDPS:
+                wide_name = metric  # e.g. WMH_volume
+            else:
+                suffix = _slugify(desc, 44) if desc else f"f{fid}"
+                wide_name = f"{modality}_{metric}_{suffix}"
+            tract_disp = tract_name or (desc if desc else "")
         # Pull a fallback description from the single-IDP map if dictionary missing
         if not desc and fid in KNOWN_SINGLE_IDPS:
             desc = KNOWN_SINGLE_IDPS[fid][3]
         panel_norm = ("secondary" if panel == "secondary" else
                       ("primary" if panel == "primary" else "exploratory"))
-        family = _classify_family(desc, metric, panel_norm,
-                                  fam_primary_terms, fam_controls_terms)
-        rows.append({
+        legacy_family = _classify_family(desc, metric, panel_norm,
+                                         fam_primary_terms, fam_controls_terms)
+        focus = _focused_metadata(fid, modality, metric, cfg)
+        if not cfg.get("focused_analysis", {}).get("enabled", True):
+            focus["family"] = legacy_family
+            focus["include"] = True if panel in ("primary", "secondary") else False
+            focus["include_in_lmm"] = focus["family"] in {"primary", "secondary", "controls"}
+        row = {
             "field_id": fid,
+            "field_id_base": focus["field_id_base"],
             "instance": inst,
             "array": arr,
             "basket_col": col,
@@ -261,13 +444,16 @@ def _build_manifest_from_basket(basket_path: str,
             "metric_guess": metric,
             "tract_or_region_guess": tract_disp,
             "panel": panel_norm,
-            "family": family,
-            "transform": "log1p_then_rank_inverse" if (panel == "secondary"
-                          and (metric == "WMH_volume" or "WMH" in metric)) else "rank_inverse_normal",
-            "include": True if panel in ("primary", "secondary") else False,
+            "family": focus["family"],
+            "analysis_tier": focus["analysis_tier"],
+            "confirmatory_role": focus["confirmatory_role"],
+            "include_in_lmm": focus["include_in_lmm"],
+            "transform": "log1p_then_rank_inverse" if (metric.startswith("WMH") or "WMH" in metric) else "rank_inverse_normal",
+            "include": focus["include"],
             "notes": f"classified_by={classifier}",
             "source": "basket",
-        })
+        }
+        rows.append(row)
         cols_to_read.append(col)
     df = pd.DataFrame(rows)
     # enforce uniqueness of column_name — if two field_ids collide on the slug,
@@ -381,8 +567,39 @@ def _derive_rd(wide: pd.DataFrame, manifest: pd.DataFrame,
             # keeps the human-readable tract name (not the slugified suffix).
             tract_disp = l2_rows.loc[l2_rows["column_name"] == l2_map[k],
                                        "tract_or_region_guess"].iloc[0]
+            l2_row = l2_rows.loc[l2_rows["column_name"] == l2_map[k]].iloc[0]
+            base = l2_row.get("field_id_base", np.nan)
+            if pd.isna(base):
+                base = _field_id_base(l2_row.get("field_id", np.nan), modality, "L2")
+            focus = {
+                "field_id_base": base,
+                "analysis_tier": l2_row.get("analysis_tier", "unfocused"),
+                "confirmatory_role": l2_row.get("confirmatory_role", "excluded"),
+                "include_in_lmm": bool(l2_row.get("include_in_lmm", False)),
+                "include": bool(l2_row.get("include", False)),
+                "family": l2_row.get("family", "unfocused"),
+            }
+            if modality == "dMRI_TBSS":
+                if str(l2_row.get("analysis_tier")) in {"primary_skeleton_tensor", "directional_tensor_context", "secondary_mechanistic", "exploratory_focused_dmri"}:
+                    focus.update({
+                        "analysis_tier": "primary_skeleton_tensor",
+                        "confirmatory_role": "primary",
+                        "include_in_lmm": True,
+                        "include": True,
+                        "family": "primary_skeleton_tensor",
+                    })
+            elif modality == "dMRI_weighted_mean":
+                if str(l2_row.get("analysis_tier")) in {"replication_weighted_tensor", "replication_directional_context", "replication_mechanistic", "exploratory_focused_dmri"}:
+                    focus.update({
+                        "analysis_tier": "replication_weighted_tensor",
+                        "confirmatory_role": "replication",
+                        "include_in_lmm": True,
+                        "include": True,
+                        "family": "replication_weighted_tensor",
+                    })
             new_rows.append({
                 "field_id": np.nan,
+                "field_id_base": focus["field_id_base"],
                 "instance": 2,
                 "array": 0,
                 "basket_col": "",
@@ -392,9 +609,12 @@ def _derive_rd(wide: pd.DataFrame, manifest: pd.DataFrame,
                 "metric_guess": "RD",
                 "tract_or_region_guess": tract_disp,
                 "panel": "primary",
-                "family": "exploratory",
+                "family": focus["family"],
+                "analysis_tier": focus["analysis_tier"],
+                "confirmatory_role": focus["confirmatory_role"],
+                "include_in_lmm": focus["include_in_lmm"],
                 "transform": "rank_inverse_normal",
-                "include": True,
+                "include": focus["include"],
                 "notes": "derived",
                 "source": "derived",
                 "region_priority": 0,

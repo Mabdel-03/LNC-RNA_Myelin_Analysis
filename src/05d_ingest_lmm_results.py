@@ -8,11 +8,11 @@ emit a per-source association table:
   results/association_results_composites_lmm.csv  — composites
   results/association_results_roi_pca_lmm.csv     — ROI-PCA scores
   results/association_results_controls_lmm.csv    — WMH/QC outcomes
-  results/multiple_testing_summary_lmm.csv        — per-family Bonferroni/BH
+  results/raw_p_testing_summary_lmm.csv           — per-family raw-p counts
 
 The output schema mirrors the OLS results so the report can render LMM and
 OLS side-by-side: column_name, family, panel, modality, metric, region, n,
-beta_per_A, se, chisq, p, log10p, engine, info, eaf, status.
+beta_per_A, se, chisq, p/raw_p, log10p, engine, info, eaf, status.
 """
 from __future__ import annotations
 
@@ -26,14 +26,47 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from utils import (  # noqa: E402
-    bh_fdr_by_family,
-    bonferroni_by_family,
     load_config,
     parse_bolt_stats,
     parse_regenie_output,
     resolve_under_repo,
     setup_logger,
 )
+
+
+def _add_raw_p_annotations(df: pd.DataFrame,
+                           p_col: str = "p",
+                           family_col: str = "family",
+                           thresholds: list[float] | None = None) -> pd.DataFrame:
+    out = df.copy()
+    if p_col not in out.columns:
+        return out
+    out["raw_p"] = pd.to_numeric(out[p_col], errors="coerce")
+    out["minus_log10_raw_p"] = -np.log10(out["raw_p"].clip(lower=np.finfo(float).tiny))
+    if family_col in out.columns:
+        out["n_tests_in_family"] = out.groupby(family_col)["raw_p"].transform(lambda s: int(s.notna().sum()))
+        out["raw_p_rank_within_family"] = out.groupby(family_col)["raw_p"].rank(method="min", na_option="bottom")
+    for thr in thresholds or []:
+        label = str(thr).replace(".", "_")
+        out[f"raw_p_lt_{label}"] = out["raw_p"] < float(thr)
+    return out
+
+
+def _raw_p_summary(df: pd.DataFrame,
+                   family_col: str = "family",
+                   p_col: str = "raw_p",
+                   thresholds: list[float] | None = None) -> pd.DataFrame:
+    rows = []
+    if family_col not in df.columns or p_col not in df.columns:
+        return pd.DataFrame(rows)
+    for fam, sub in df.groupby(family_col, dropna=False):
+        p = pd.to_numeric(sub[p_col], errors="coerce")
+        n = int(p.notna().sum())
+        rec = {"family": fam, "n_tests": n, "min_raw_p": float(p.min()) if n else np.nan}
+        for thr in thresholds or []:
+            rec[f"n_raw_p_lt_{thr:g}"] = int((p < float(thr)).sum())
+        rows.append(rec)
+    return pd.DataFrame(rows).sort_values("min_raw_p", na_position="last")
 
 
 def _manifest_lookup(manifest: pd.DataFrame, column_name: str) -> dict:
@@ -174,7 +207,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest_path = results_dir / "phenotype_manifest.csv"
 
     if dry:
-        log.info("DRY RUN — would parse REGENIE/BOLT outputs from {lmm_dir}")
+        log.info(f"DRY RUN — would parse REGENIE/BOLT outputs from {lmm_dir}")
         log.info(f"  manifest: {manifest_path} {'OK' if manifest_path.is_file() else 'MISSING'}")
         return 0
 
@@ -205,9 +238,9 @@ def main(argv: list[str] | None = None) -> int:
     all_df["effect_allele"] = cfg["variant"]["effect_allele"]
     all_df["other_allele"] = cfg["variant"]["other_allele"]
 
-    # Per-family multiple testing on LMM p-values
-    all_df["family_bonferroni"] = bonferroni_by_family(all_df, family_col="family", p_col="p")
-    all_df["family_fdr_bh"] = bh_fdr_by_family(all_df, family_col="family", p_col="p")
+    model_cfg = cfg.get("models", {})
+    raw_thresholds = [float(x) for x in model_cfg.get("raw_p_thresholds", [0.05, 0.01, 0.001])]
+    all_df = _add_raw_p_annotations(all_df, p_col="p", thresholds=raw_thresholds)
 
     # Split by phenotype source for parallel-to-OLS output layout
     src = all_df["source"].fillna("basket")
@@ -222,34 +255,13 @@ def main(argv: list[str] | None = None) -> int:
         if sub.empty:
             continue
         path = results_dir / name
-        sub.sort_values("p", na_position="last").to_csv(path, index=False)
+        sub.sort_values("raw_p", na_position="last").to_csv(path, index=False)
         log.info(f"wrote {path} ({len(sub)} rows)")
 
-    # multiple_testing_summary_lmm.csv
-    mt_rows = []
-    for fam_name, sub in all_df.groupby("family", dropna=False):
-        n = int(sub["p"].notna().sum())
-        if n == 0:
-            mt_rows.append({"family": fam_name, "n_tests": 0,
-                             "alpha_bonf": np.nan,
-                             "n_sig_bonf": 0, "n_sig_fdr_05": 0, "n_sig_fdr_10": 0,
-                             "min_p": np.nan, "q_at_top_hit": np.nan})
-            continue
-        n_sig_bonf = int((sub["family_bonferroni"] <= 0.05).sum())
-        n_sig_fdr05 = int((sub["family_fdr_bh"] <= 0.05).sum())
-        n_sig_fdr10 = int((sub["family_fdr_bh"] <= 0.10).sum())
-        top_q = float(sub.sort_values("p").iloc[0].get("family_fdr_bh", np.nan))
-        mt_rows.append({
-            "family": fam_name, "n_tests": n,
-            "alpha_bonf": 0.05 / n,
-            "n_sig_bonf": n_sig_bonf,
-            "n_sig_fdr_05": n_sig_fdr05,
-            "n_sig_fdr_10": n_sig_fdr10,
-            "min_p": float(sub["p"].min()),
-            "q_at_top_hit": top_q,
-        })
-    pd.DataFrame(mt_rows).to_csv(results_dir / "multiple_testing_summary_lmm.csv", index=False)
-    log.info("wrote multiple_testing_summary_lmm.csv")
+    raw_summary = _raw_p_summary(all_df, thresholds=raw_thresholds)
+    raw_summary.to_csv(results_dir / "raw_p_testing_summary_lmm.csv", index=False)
+    raw_summary.to_csv(results_dir / "multiple_testing_summary_lmm.csv", index=False)
+    log.info("wrote raw_p_testing_summary_lmm.csv and raw-p compatibility copy multiple_testing_summary_lmm.csv")
     return 0
 
 

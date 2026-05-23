@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 #SBATCH -J lncrna_ols
 #SBATCH -p kellis
-#SBATCH -n 4
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=300G
 #SBATCH -t 8:00:00
 #SBATCH -o logs/sbatch/lncrna_ols_%j.out
 #SBATCH -e logs/sbatch/lncrna_ols_%j.err
 #
 # OLS-only pipeline for rs2546890 × UKBB MRI IDPs.
-# Runs 00 → 06 with engine=ols. Includes composites + ROI PCA + per-family FDR.
-# Wall-clock budget: ~30 min on the imaging subsample (39K). 8h is generous safety.
+# Runs 00 → 06 with engine=ols. Includes composites + ROI PCA + raw-p-only summaries.
+# OLS is parallelized across phenotypes with one BLAS thread per worker.
 #
 # Submit from the repo root:
 #   sbatch scripts/sbatch/pipeline_ols.sbatch.sh
@@ -43,6 +44,16 @@ conda activate /home/mabdel03/data/conda_envs/Python_Analysis
 # avoids shadowing Python_Analysis's `python`).
 export PATH="${PATH}:/home/mabdel03/data/conda_envs/GWAS_env/bin"
 
+N_THREADS="${SLURM_CPUS_PER_TASK:-${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-16}}}"
+export PLINK2_THREADS="${PLINK2_THREADS:-${N_THREADS}}"
+export OLS_N_JOBS="${OLS_N_JOBS:-${N_THREADS}}"
+export OLS_BLAS_THREADS="${OLS_BLAS_THREADS:-1}"
+export OMP_NUM_THREADS="${OLS_BLAS_THREADS}"
+export OPENBLAS_NUM_THREADS="${OLS_BLAS_THREADS}"
+export MKL_NUM_THREADS="${OLS_BLAS_THREADS}"
+export NUMEXPR_NUM_THREADS="${OLS_BLAS_THREADS}"
+export VECLIB_MAXIMUM_THREADS="${OLS_BLAS_THREADS}"
+
 # Optional engine override (default = whatever config.yaml says).
 # IMPORTANT: keep the tempfile in the repo root, not /tmp — the pipeline
 # derives `_repo_root` from the config-file parent dir, so a /tmp tempfile
@@ -60,7 +71,9 @@ fi
 
 echo "[$(date -Iseconds)] starting pipeline on $(hostname)"
 echo "  engine: ${ENGINE_OVERRIDE:-from config.yaml}"
-echo "  threads: ${SLURM_CPUS_ON_NODE:-${SLURM_NTASKS:-4}}"
+echo "  OLS workers: ${OLS_N_JOBS}"
+echo "  BLAS threads/worker: ${OLS_BLAS_THREADS}"
+echo "  PLINK2 threads: ${PLINK2_THREADS}"
 echo "  job id: ${SLURM_JOB_ID:-N/A}"
 
 bash scripts/run_all.sh ${CFG_ARG}
