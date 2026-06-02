@@ -20,6 +20,7 @@ are invoked by `scripts/sbatch/pipeline_ms_risk_lmm.sbatch.sh`.
 | 06 | `06_plots_and_report.py` | Produce summary plots and technical Markdown reports. | `figures/*.png`, `report.md`, `report_hierarchical.md` |
 | Targeted | `targeted_diffusion_check.py` | Filter OLS outputs to FA, L1, and RD targeted tract checks. | `targeted_diffusion_check.csv`, `targeted_diffusion_forest.png` |
 | 07 | `07_run_ms_risk.py` | Derive MS cases and fit logistic disease-risk sensitivities. | `association_ms_risk.csv`, `ms_phenotype_audit.csv` |
+| 08 | `08_run_disease_subset_mri.py` | Derive clinical broad-neurodegeneration/MS flags and fit MRI interaction plus stratified subset models. | `disease_subset_audit.csv`, `association_disease_subset_mri.csv` |
 | 07b | `07b_run_ms_risk_lmm.py` | Fit REGENIE binary-trait/Firth MS-risk model. | `association_ms_risk_lmm.csv` |
 
 Per-eid tables and raw LMM engine outputs are ignored because they may contain
