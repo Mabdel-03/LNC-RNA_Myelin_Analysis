@@ -305,3 +305,21 @@ lmm:
     threads: 16
     include_single_idps: false           # BOLT default scope = composites + ROI PCs only
     regen_bgen: false                    # if true, materialize chr5 BGEN from pgen via plink2 (~1 hr)
+
+disease_subset:
+  # Step 08 clinical neurodegeneration/MS-enriched MRI models.
+  # Disease flags are clinical-only; MRI measures are outcomes, not subset
+  # definitions.
+  scope_families:
+    - "primary_skeleton_tensor"
+    - "directional_tensor_context"
+    - "secondary_mechanistic"
+    - "replication_weighted_tensor"
+    - "replication_mechanistic"
+    - "controls"
+    - "secondary_composite"
+    - "secondary_roi_pca"
+  min_cases_per_phenotype: 100
+  min_controls_per_phenotype: 100
+  min_case_genotype_n: 10
+  vcov_type: "nonrobust"

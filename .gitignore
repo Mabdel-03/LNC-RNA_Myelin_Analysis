@@ -24,6 +24,7 @@ results/roi_pca_phenotypes.csv
 
 # Per-eid MS phenotype (UKB individual-level data — never commit)
 results/ms_phenotype.tsv
+results/disease_subset_phenotypes.tsv
 
 # Per-run timestamped output dirs (only relevant if overwrite=false)
 results/2*/

@@ -6,7 +6,8 @@ MS cases are derived from the UKB basket using ICD-10 G35:
   - secondary hospital diagnoses (field 41204)
   - all-source ICD-10 summary    (field 41270)
   - self-report non-cancer       (field 20002 == 1261)
-  - first-occurrence categories  (fields 130892, 130893, 131042, 131043)
+  - first-occurrence G35 date    (field 131042; source field 131043 retained
+                                  as provenance only)
 
 Headline regression (additive dosage, logistic):
     logit(P(ms_case)) = b0 + b_A * dosage_A + covariates
@@ -47,11 +48,13 @@ from utils import (  # noqa: E402
     set_seed,
 )
 
-# G35 ICD-10 = multiple sclerosis; self-report code 1261 = MS
+# G35 ICD-10 = multiple sclerosis; self-report code 1261 = MS.
+# Note: UKB fields 130892/130893 are F31 bipolar affective disorder, not MS.
 ICD_FIELDS = ("41202", "41204", "41270")
 SELF_REPORT_FIELD = "20002"
 SELF_REPORT_MS_CODE = 1261
-FIRST_OCCURRENCE_FIELDS = ("130892", "130893", "131042", "131043")
+FIRST_OCCURRENCE_FIELDS = ("131042",)
+FIRST_OCCURRENCE_SOURCE_FIELDS = ("131043",)
 G35_RE = re.compile(r"^G35", re.IGNORECASE)
 
 
@@ -61,6 +64,7 @@ def _collect_ms_columns(header: list[str]) -> dict[str, list[str]]:
         "icd": [],
         "self_report": [],
         "first_occurrence": [],
+        "first_occurrence_source": [],
     }
     for c in header:
         m = re.match(r"^f\.(\d{3,6})\.", c)
@@ -73,6 +77,8 @@ def _collect_ms_columns(header: list[str]) -> dict[str, list[str]]:
             out["self_report"].append(c)
         elif fid in FIRST_OCCURRENCE_FIELDS:
             out["first_occurrence"].append(c)
+        elif fid in FIRST_OCCURRENCE_SOURCE_FIELDS:
+            out["first_occurrence_source"].append(c)
     return out
 
 
@@ -84,6 +90,7 @@ def _derive_ms_case(basket: pd.DataFrame,
     flag_icd = pd.Series(False, index=basket.index)
     flag_sr = pd.Series(False, index=basket.index)
     flag_fo = pd.Series(False, index=basket.index)
+    flag_fo_source = pd.Series(False, index=basket.index)
 
     for c in groups["icd"]:
         s = basket[c].astype(str).str.upper()
@@ -96,6 +103,9 @@ def _derive_ms_case(basket: pd.DataFrame,
     for c in groups["first_occurrence"]:
         flag_fo |= basket[c].notna()
 
+    for c in groups.get("first_occurrence_source", []):
+        flag_fo_source |= basket[c].notna()
+
     any_flag = flag_icd | flag_sr | flag_fo
 
     audit = {
@@ -103,6 +113,7 @@ def _derive_ms_case(basket: pd.DataFrame,
         "n_icd_G35": int(flag_icd.sum()),
         "n_self_report_1261": int(flag_sr.sum()),
         "n_first_occurrence": int(flag_fo.sum()),
+        "n_first_occurrence_source": int(flag_fo_source.sum()),
         "n_ms_cases_union": int(any_flag.sum()),
     }
     log.info(
@@ -118,6 +129,7 @@ def _derive_ms_case(basket: pd.DataFrame,
         "src_icd_G35": flag_icd.astype(int),
         "src_self_report_1261": flag_sr.astype(int),
         "src_first_occurrence": flag_fo.astype(int),
+        "src_first_occurrence_source": flag_fo_source.astype(int),
     })
     return out, audit
 
@@ -309,10 +321,17 @@ def main(argv: list[str] | None = None) -> int:
             log.error("basket has no eid / f.eid column")
             return 2
         groups = _collect_ms_columns(header)
-        use_cols = [eid_col] + groups["icd"] + groups["self_report"] + groups["first_occurrence"]
+        use_cols = (
+            [eid_col]
+            + groups["icd"]
+            + groups["self_report"]
+            + groups["first_occurrence"]
+            + groups["first_occurrence_source"]
+        )
         log.info(f"basket subset: {len(use_cols):,} cols "
                  f"(icd={len(groups['icd'])}, sr={len(groups['self_report'])}, "
-                 f"fo={len(groups['first_occurrence'])})")
+                 f"fo={len(groups['first_occurrence'])}, "
+                 f"fo_source={len(groups['first_occurrence_source'])})")
 
         # 2. Read basket subset (object dtype for ICD strings, numeric for sr / fo dates)
         log.info(f"reading {len(use_cols):,} basket columns; this may take ~30-60s")
